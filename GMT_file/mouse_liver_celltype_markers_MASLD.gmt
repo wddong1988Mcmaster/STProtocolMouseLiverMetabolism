@@ -1,0 +1,19 @@
+B_Cells	NA	Cd79a	Cd19	Ms4a1
+Central_Vein_Endothelial_Cells	NA	Aqp1	Cd34	Dpp4
+Cholangiocytes	NA	Sox9	Krt19	Epcam
+Dendritic_Cells	NA	Flt3	Cd209a	Itgax
+Fibrogenic_Stellate_Cells	NA	Col1a1	Col1a2	Dcn
+Hepatic_Stellate_Cells	NA	Des	Acta2	Pdgfrb
+Hepatocytes_CV	NA	Cyp2e1	Glul	Oat
+Hepatocytes_PV	NA	Cyp2f2	Hal	Gls2
+Kupffer_Cells	NA	Clec4f	Vsig4	Marco
+LSECs	NA	Stab2	Lyve1	Clec1b	F8
+Monocyte_Derived_Macrophages	NA	Spp1	Itgax	Lgals3
+Monocytes	NA	Ly6c2	Ccr2
+NK_cells	NA	Nkg7	Klrb1c
+Neutrophils	NA	S100a8	S100a9	Mmp8	Ly6g
+Pericentral_Macrophages	NA	Spp1	Itgax	Trem2	Lgals3
+Periportal_Macrophages	NA	Timd4	Clec4f	Vsig4	Marco
+Portal_Endothelial_Cells	NA	Lyve1	Mrc1	Stab2
+T_Cells	NA	Cd3e	Cd3d	Cd8a	Cd4
+pDCs	NA	Siglech	Bst2	Irf7
