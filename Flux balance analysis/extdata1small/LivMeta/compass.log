@@ -1,0 +1,2109 @@
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-15 20:38:52.102411
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Computing penalties using 20 processes
+Progress bar will update once the first process is finished
+Reaction Expression Computation Completed Successfully
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-15 20:44:31.725585
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Computing penalties using 20 processes
+Progress bar will update once the first process is finished
+Reaction Expression Computation Completed Successfully
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-15 20:45:45.705151
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Computing penalties using 20 processes
+Progress bar will update once the first process is finished
+Reaction Expression Computation Completed Successfully
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-15 20:49:52.891425
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Computing penalties using 20 processes
+Progress bar will update once the first process is finished
+Reaction Expression Computation Completed Successfully
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-15 21:09:28.807964
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Computing penalties using 20 processes
+Progress bar will update once the first process is finished
+Reaction Expression Computation Completed Successfully
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-15 21:33:29.454201
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Computing penalties using 20 processes
+Progress bar will update once the first process is finished
+Reaction Expression Computation Completed Successfully
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-15 21:40:49.081403
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Computing penalties using 20 processes
+Progress bar will update once the first process is finished
+Reaction Expression Computation Completed Successfully
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-15 21:44:06.386640
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Computing penalties using 20 processes
+Progress bar will update once the first process is finished
+Reaction Expression Computation Completed Successfully
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-16 05:44:34.196554
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Computing penalties using 20 processes
+Progress bar will update once the first process is finished
+Reaction Expression Computation Completed Successfully
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-16 08:59:38.029796
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Computing penalties using 20 processes
+Progress bar will update once the first process is finished
+Reaction Expression Computation Completed Successfully
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-16 09:04:54.391494
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-16 09:33:48.140421
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\Th17\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\Th17
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\Th17\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-20 16:27:21.296700
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-20 20:40:22.987860
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-20 21:26:26.682999
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-20 22:08:06.522996
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-20 22:14:08.095325
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-20 22:23:50.721503
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-20 22:32:31.749078
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-20 22:40:00.988317
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-20 22:41:01.378458
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-21 06:52:59.780910
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-21 06:53:51.317660
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-21 06:55:04.835972
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-21 06:57:32.710999
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata1small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-21 07:00:18.988704
+Cache for model and media already built
+Evaluating Reaction Penalties...
+Compass version: 1.0.0
+Git commit: Not in Git repo
+Python Version:
+3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]
+Python prefix: C:\Users\wddon\anaconda3
+Numpy version: 1.24.4
+Pandas version: 1.5.3
+Supplied Arguments: 
+   data: ['C:\\ML\\MetabolicFlux\\pythonProject1\\extdata2small\\LivMeta\\linear_gene_expression_matrix.tsv']
+   data_mtx: None
+   model: RECON2_mat
+   species: mus_musculus
+   media: default-media
+   output_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta
+   temp_dir: C:\ML\MetabolicFlux\pythonProject1\extdata1small\LivMeta\_tmp
+   torque_queue: None
+   num_processes: 50
+   lambda: 0.25
+   single_sample: None
+   set_license: None
+   sample_range: None
+   reaction_range: None
+   metabolite_range: None
+   generate_cache: False
+   test_mode: False
+   num_threads: 1
+   turbo: 1.0
+   turbo_increments: 0.01
+   turbo_min_pct: 0.99
+   turbo_max_iters: 1000000
+   turbo_temp_dir: None
+   turbo_meta_subsystem_preprocess_cache_dir: None
+   turbo_meta_subsystem_models_dir: None
+   turbo_meta_subsystem_model: None
+   turbo_meta_subsystem_model_temp_dir: None
+   and_function: mean
+   select_reactions: None
+   selected_reactions_for_each_cell: None
+   select_subsystems: None
+   select_meta_subsystems: None
+   glucose: None
+   oxygen: None
+   close_oxygen: False
+   collect: False
+   config_file: None
+   num_neighbors: 10
+   symmetric_kernel: False
+   input_weights: None
+   penalty_diffusion: knn
+   no_reactions: False
+   calc_metabolites: False
+   precache: False
+   input_knn: None
+   input_knn_distances: None
+   output_knn: None
+   latent_space: None
+   only_penalties: None
+   example_inputs: None
+   microcluster_size: None
+   microcluster_file: None
+   microcluster_data_file: None
+   anndata_output: False
+   anndata_obs: None
+   anndata_uns: None
+   detailed_perf: False
+   penalties_file: 
+   penalties_dir: 
+   lpmethod: 4
+   advance: 2
+   save_argmaxes: False
+   isoform_summing: legacy
+   list_genes: None
+   list_reactions: None
+
+COMPASS Started: 2025-04-26 14:01:42.113709
+Cache for model and media already built
+Evaluating Reaction Penalties...
