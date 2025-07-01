@@ -1,38 +1,37 @@
 ###### An Integrated Pipeline for Cell-Type Annotation, Metabolic Pathway Profiling, and Spatial Communication Analysis in the Liver using Spatial Transcriptomics.
 ###### Author: Dongdong Wang (McMaster University) 
 
-########### Overview
-# this tutorial will cover the following tasks,
-# which we believe will be common for many spatial analyses.
 
-#A. Analyze two samples separately
-#1.Load two data sets (control and treat) from 10X Space Ranger
-#2.Normalization: SCTransform
-#3.Compare the difference between two samples
+##### Overview for downstream analysis #####
+## This tutorial will cover the following tasks:
 
-#B. Analyze two samples together (After Integratation)
-#1.Normalization: SCTransform
-#2.Merge two different data/Working with multiple slices
-#3.Normalization: SCTransform
-#4.Integration two data sets 
-#5.Dimensional reduction and clustering
-#6.Chat-GPT4 annotation, Detecting spatially-variable features
-#7.Performing any differential expression analysis
-#8.Pathway analysis.
+## 1. Quality Control (QC) and normalization
+## 2. Dimension reduction
+## 3. Clustering
+## 4. Non-linear dimensional reduction (UMAP/t-SNE)
+## 5. Identification of cluster biomarkers
+## 6. Cell type annotation 
+##     a. Automatic annotation using GPT; 
+##     b. Annotation via deconvolution using a scRNA-seq reference 
+##     c. Manual annotation
+## 7. DEG analysis, pathway enrichment analysis and Spatially Variable Genes (SVGs) analysis
+## 8. Integrative analysis across multiple samples or conditions
+## 9. Pseudobulk analysis
+## 10. Quantification of cell type composition 
+## 11. Cellular communication
+## 12. Metabolic activity analysis
+##     a. Metabolic pathway activity
+##     b. Metabolic interactions
+##     c. Flux balance analysis (FBA)
 
 
 
-
+## Environment initialization
 rm(list = ls())
 options(stringsAsFactor = F)
 
-## update R
+## Install packages and load necessary packages
 install.packages("installr")
-library(installr)
-updateR()
-sessionInfo()
-
-## This can take approximately 25 min. Install and load necessary packages for Seurat:
 install.packages("remotes")
 if (!require("hdf5r")) install.packages("hdf5r")
 install.packages("Rtools")
@@ -46,31 +45,17 @@ BiocManager::install("celldex")
 install.packages('SeuratObject')
 install.packages("spatstat.utils")
 devtools::install_github("thomasp85/patchwork")
-
-remove.packages(grep("spatstat", installed.packages(), value = T))
-.rs.restartR()
 devtools::install_version("spatstat", version = "3.0.5")
-
-
-update.packages(oldPkgs = c("withr", "rlang"))
 remotes::install_github('satijalab/azimuth', ref = 'master')
 BiocManager::install("tximport")
 install.packages("tidyverse")
 BiocManager::install("tximportData")
 install.packages("devtools")
 devtools::install_github("arleyc/PCAtest")
-
-## Install LoupeR:
 remotes::install_github("10XGenomics/loupeR")
 loupeR::setup()
-
-## install GPTCelltype package for Automatic cell type annotation
 install.packages("openai")
 remotes::install_github("Winnie09/GPTCelltype")
-
-help(spatstat.utils)
-
-## install scMetabolism for quantifying metabolism activity
 install.packages("data.table")
 install.packages("wesanderson")
 install.packages("AUCell")
@@ -80,19 +65,11 @@ install.packages("VISION")
 remove.packages("promises")
 install.packages("promises")
 install.packages("devtools")
-library(promises)
-
 remove.packages("VISION")
 remove.packages("AUCell")
 remove.packages("GSVA")
-library(VISION)
-library(AUCell)
-library(GSVA)
-
 devtools::install_github("YosefLab/VISION@v2.1.0") #Please note that the version would be v2.1.0
 devtools::install_github("wu-yc/scMetabolism")
-
-
 remotes::install_github("10XGenomics/loupeR")
 loupeR::setup()
 devtools::install_github('satijalab/seurat-data')
@@ -111,17 +88,10 @@ BiocManager::install("GSEABase")
 BiocManager::install("AUCell")
 install.packages("promises")
 
-#devtools::install_github("YosefLab/VISION")
-devtools::install_github("cran/loe")
-devtools::install_github("YosefLab/VISION@v2.1.0") #Please note that the version would be v2.1.0
 library(GSVA)
 library(GSEABase)
 library(AUCell)
 library(VISION)
-devtools::install_github("wu-yc/scMetabolism")
-
-
-#library(Azimuth)
 library('SeuratObject')
 library("spatstat.utils")
 library(spatstat.utils)
@@ -130,7 +100,6 @@ library("hdf5r")
 library(loupeR)
 library(patchwork)
 library(SeuratData)
-
 library(GEOquery)
 library(dplyr)
 library(pathview)
@@ -141,52 +110,26 @@ library("export")
 library(PCAtest)
 library(patchwork)
 library(tidyverse)
-
 library(SingleR)
 library(scRNAseq)
 library(celldex)
-
 library(GPTCelltype)
 library(openai)
-
 library(scMetabolism)
 library(ggplot2)
 library(rsvd)
-
 
 sessionInfo()
 
 
 
-########### Overview
-# this tutorial will cover the following tasks,
-# which we believe will be common for many spatial analyses.
 
-#A. Analyze two samples separately
-#1.Load two data sets (control and treat) from 10X Space Ranger
-#2.Normalization: SCTransform
-#3.Compare the difference between two samples
-
-#B. Analyze two samples together (After Integratation)
-#1.Normalization: SCTransform
-#2.Merge two different data/Working with multiple slices
-#3.Normalization: SCTransform
-#4.Integration two data sets 
-#5.Dimensional reduction and clustering
-#6.Chat-GPT4 annotation, Detecting spatially-variable features
-#7.Performing any differential expression analysis
-#8.Pathway analysis.
-
-
-############# A. Analyze two samples separately
-############# Load two data sets (control and treat) from 10X Space Ranger
-
+############# Load data sets from 10X Space Ranger
 ############# Working with multiple slices in Seurat
-
 ### read it in and perform the same initial normalization
 # liver1
 liver1=Load10X_Spatial(
-  data_dir <- 'C:/Users/wddon/OneDrive/文档/BaiduSyncdisk/R analysis/Spatial transcriptomics/GDF15CR/Sam19',
+  data_dir <- 'C:/YourFolder/Sam19',
   filename = "filtered_feature_bc_matrix.h5",
   assay = "Spatial",
   slice = "condition1a",
@@ -194,10 +137,9 @@ liver1=Load10X_Spatial(
   to.upper = FALSE
 )
 
-
 # liver2
 liver2=Load10X_Spatial(
-  data_dir <- 'C:/Users/wddon/OneDrive/文档/BaiduSyncdisk/R analysis/Spatial transcriptomics/GDF15CR/Sam10',
+  data_dir <- 'C:/YourFolder/Sam10',
   filename = "filtered_feature_bc_matrix.h5",
   assay = "Spatial",
   slice = "condition2a",
@@ -205,10 +147,9 @@ liver2=Load10X_Spatial(
   to.upper = FALSE
 )
 
-
 # liver3
 liver3=Load10X_Spatial(
-  data_dir <- 'C:/Users/wddon/OneDrive/文档/BaiduSyncdisk/R analysis/Spatial transcriptomics/GDF15CR/Sam18',
+  data_dir <- 'C:/YourFolder/Sam18',
   filename = "filtered_feature_bc_matrix.h5",
   assay = "Spatial",
   slice = "condition1b",
@@ -216,24 +157,15 @@ liver3=Load10X_Spatial(
   to.upper = FALSE
 )
 
-
 # liver4
 liver4=Load10X_Spatial(
-  data_dir <- 'C:/Users/wddon/OneDrive/文档/BaiduSyncdisk/R analysis/Spatial transcriptomics/GDF15CR/Sam11',
+  data_dir <- 'C:/YourFolder/Sam11',
   filename = "filtered_feature_bc_matrix.h5",
   assay = "Spatial",
   slice = "condition2b",
   filter.matrix = TRUE,
   to.upper = FALSE
 )
-
-
-liver1
-liver2
-liver3
-liver4
-
-
 
 # Change orig.ident name and 
 head(liver1[[]])
@@ -265,8 +197,7 @@ liver3@project.name = "condition1b_liver"
 liver4@project.name = "condition2b_liver"
 
 
-
-######## Data pre-processing (QC and selecting cells for further analysis)
+## 1. Quality Control (QC) and normalization
 # for liver1
 plot1 <- VlnPlot(liver1, features = "nFeature_Spatial", pt.size = 0.1) + NoLegend()
 plot2 <- SpatialFeaturePlot(liver1, features = "nFeature_Spatial") + theme(legend.position = "right")
@@ -279,8 +210,6 @@ plot2 <- SpatialFeaturePlot(liver1, features = "nCount_Spatial") + theme(legend.
 wrap_plots(plot1, plot2)
 graph2svg(x = NULL, file='1-DataCheckLiv1_counts', font = "Arial", cairo = TRUE,   
           width = 6, height = 4.5, bg = "transparent")
-
-
 
 # for liver2
 plot1 <- VlnPlot(liver2, features = "nFeature_Spatial", pt.size = 0.1) + NoLegend()
@@ -295,8 +224,6 @@ wrap_plots(plot1, plot2)
 graph2svg(x = NULL, file='1-DataCheckLiv2_counts', font = "Arial", cairo = TRUE,   
           width = 6, height = 4.5, bg = "transparent")
 
-
-
 # for liver3
 plot1 <- VlnPlot(liver3, features = "nFeature_Spatial", pt.size = 0.1) + NoLegend()
 plot2 <- SpatialFeaturePlot(liver3, features = "nFeature_Spatial") + theme(legend.position = "right")
@@ -310,8 +237,6 @@ wrap_plots(plot1, plot2)
 graph2svg(x = NULL, file='1-DataCheckLiv3_counts', font = "Arial", cairo = TRUE,   
           width = 6, height = 4.5, bg = "transparent")
 
-
-
 # for liver4
 plot1 <- VlnPlot(liver4, features = "nFeature_Spatial", pt.size = 0.1) + NoLegend()
 plot2 <- SpatialFeaturePlot(liver4, features = "nFeature_Spatial") + theme(legend.position = "right")
@@ -324,9 +249,6 @@ plot2 <- SpatialFeaturePlot(liver4, features = "nCount_Spatial") + theme(legend.
 wrap_plots(plot1, plot2)
 graph2svg(x = NULL, file='1-DataCheckLiv4_counts', font = "Arial", cairo = TRUE,   
           width = 6, height = 4.5, bg = "transparent")
-
-
-
 
 # We filter cells that have unique feature counts over 7,500 or less than 2000
 liver1 <- subset(liver1, subset = nFeature_Spatial > 1000 & nFeature_Spatial < 7500)
@@ -357,14 +279,11 @@ wrap_plots(plot1, plot2)
 graph2svg(x = NULL, file='1-DataCheckLiv2_counts_SCT', font = "Arial", cairo = TRUE,   
           width = 6, height = 4.5, bg = "transparent")
 
-
-
 ## save the object at this point
 saveRDS(liver1SCT, file = "liver1SCT_Prtc.rds")
 saveRDS(liver2SCT, file = "liver2SCT_Prtc.rds")
 saveRDS(liver3SCT, file = "liver3SCT_Prtc.rds")
 saveRDS(liver4SCT, file = "liver4SCT_Prtc.rds")
-
 
 ## Load the data
 liver1SCT <- readRDS("liver1SCT_Prtc.rds")
@@ -373,10 +292,9 @@ liver3SCT <- readRDS("liver3SCT_Prtc.rds")
 liver4SCT <- readRDS("liver4SCT_Prtc.rds")
 
 
-## Dimension reduction, clustering, and visualization
-# run dimension reduction and clustering on the RNA expression data
-
-# liver1
+## 2. Dimension reduction
+## 3. Clustering
+## 4. Non-linear dimensional reduction (UMAP/t-SNE)
 obj=liver1SCT
 obj <- RunPCA(obj, assay = "SCT", verbose = FALSE)
 obj <- FindNeighbors(obj, reduction = "pca", dims = 1:30)
@@ -384,14 +302,12 @@ obj <- FindClusters(obj, verbose = FALSE, resolution = 1) #resolution between 0.
 obj <- RunUMAP(obj, reduction = "pca", dims = 1:30)
 # Look at cluster IDs of the first 5 cells
 head(Idents(obj), 5)
-
 liver1SCT1= obj
 
 # visualize the results of the clustering
 p1 <- DimPlot(obj, reduction = "umap", label = TRUE)
 p2 <- SpatialDimPlot(obj, label = TRUE, label.size = 3)
 p1 + p2
-
 graph2svg(x = NULL, file='2-cluster_liv1', font = "Arial", cairo = TRUE,   
           width = 10, height = 6, bg = "transparent")
 
@@ -404,7 +320,6 @@ p1 = DimPlot(obj, reduction = "pca") + NoLegend()
 p1
 graph2svg(x = NULL, file='2-1-PCADimecluster_liv2', font = "Arial", cairo = TRUE,   
           width = 4, height = 4, bg = "transparent")
-
 p1 = VizDimLoadings(obj, dims = 1:2, nfeatures = 15, reduction = "pca")
 p1
 graph2svg(x = NULL, file='2-2-PCADimecluster_liv2', font = "Arial", cairo = TRUE,   
@@ -415,17 +330,14 @@ obj <- FindNeighbors(obj, reduction = "pca", dims = 1:30)
 obj <- FindClusters(obj, verbose = FALSE, resolution = 1) #resolution between 0.4-1.2 typically returns good results
 obj <- RunUMAP(obj, reduction = "pca", dims = 1:30)
 head(Idents(obj), 5)
-
 liver2SCT1= obj
 
 # visualize the results of the clustering
 p1 <- DimPlot(obj, reduction = "umap", label = TRUE)
 p2 <- SpatialDimPlot(obj, label = TRUE, label.size = 3)
 p1 + p2
-
 graph2svg(x = NULL, file='2-cluster_liv2', font = "Arial", cairo = TRUE,   
           width = 10, height = 6, bg = "transparent")
-
 
 # Clustering and t-SNE
 obj=liver2SCT
@@ -434,17 +346,14 @@ obj <- FindNeighbors(obj, reduction = "pca", dims = 1:30)
 obj <- FindClusters(obj, verbose = FALSE, resolution = 1) #resolution between 0.4-1.2 typically returns good results
 obj <- RunTSNE(obj, reduction = "pca", dims = 1:30)
 head(Idents(obj), 5)
-
 liver2SCT1_tsne= obj
 
 # visualize the results of the clustering
 p1 <- DimPlot(obj, reduction = "tsne", label = TRUE)
 p2 <- SpatialDimPlot(obj, label = TRUE, label.size = 3)
 p1 + p2
-
 graph2svg(x = NULL, file='2-cluster_liv2_tSNE', font = "Arial", cairo = TRUE,   
           width = 10, height = 6, bg = "transparent")
-
 
 # liver3
 obj=liver3SCT
@@ -453,18 +362,14 @@ obj <- FindNeighbors(obj, reduction = "pca", dims = 1:30)
 obj <- FindClusters(obj, verbose = FALSE, resolution = 1) #resolution between 0.4-1.2 typically returns good results
 obj <- RunUMAP(obj, reduction = "pca", dims = 1:30)
 head(Idents(obj), 5)
-
 liver3SCT1= obj
 
 # visualize the results of the clustering
 p1 <- DimPlot(obj, reduction = "umap", label = TRUE)
 p2 <- SpatialDimPlot(obj, label = TRUE, label.size = 3)
 p1 + p2
-
 graph2svg(x = NULL, file='2-cluster_liv3', font = "Arial", cairo = TRUE,   
           width = 10, height = 6, bg = "transparent")
-
-
 
 # liver4
 obj=liver4SCT
@@ -473,17 +378,14 @@ obj <- FindNeighbors(obj, reduction = "pca", dims = 1:30)
 obj <- FindClusters(obj, verbose = FALSE, resolution = 1) #resolution between 0.4-1.2 typically returns good results
 obj <- RunUMAP(obj, reduction = "pca", dims = 1:30)
 head(Idents(obj), 5)
-
 liver4SCT1= obj
 
 # visualize the results of the clustering
 p1 <- DimPlot(obj, reduction = "umap", label = TRUE)
 p2 <- SpatialDimPlot(obj, label = TRUE, label.size = 3)
 p1 + p2
-
 graph2svg(x = NULL, file='2-cluster_liv4', font = "Arial", cairo = TRUE,   
           width = 10, height = 6, bg = "transparent")
-
 
 
 
@@ -493,7 +395,6 @@ graph2svg(x = NULL, file='2-cluster_liv4', font = "Arial", cairo = TRUE,
 DimHeatmap(liver1SCT1, dims = 1:6, cells = 500, balanced = TRUE)
 graph2svg(x = NULL, file='3-DimHeatmap_liv1', font = "Arial", cairo = TRUE,   
           width = 8, height = 7, bg = "transparent")
-
 # liver2
 DimHeatmap(liver2SCT1, dims = 1:6, cells = 500, balanced = TRUE)
 graph2svg(x = NULL, file='3-DimHeatmap_liv2', font = "Arial", cairo = TRUE,   
@@ -503,7 +404,6 @@ graph2svg(x = NULL, file='3-DimHeatmap_liv2', font = "Arial", cairo = TRUE,
 DimHeatmap(liver3SCT1, dims = 1:6, cells = 500, balanced = TRUE)
 graph2svg(x = NULL, file='3-DimHeatmap_liv3', font = "Arial", cairo = TRUE,   
           width = 8, height = 7, bg = "transparent")
-
 # liver4
 DimHeatmap(liver4SCT1, dims = 1:6, cells = 500, balanced = TRUE)
 graph2svg(x = NULL, file='3-DimHeatmap_liv4', font = "Arial", cairo = TRUE,   
@@ -512,34 +412,28 @@ graph2svg(x = NULL, file='3-DimHeatmap_liv4', font = "Arial", cairo = TRUE,
 
 ## Determine the ‘dimensionality’ of the dataset
 # If an ‘elbow’ is around PC9-10, it suggests the majority of true signal is captured in the first 10 PCs.
-
 # liver1
 ElbowPlot(liver1SCT1)
 graph2svg(x = NULL, file='3_1-ElbowPlot_liv1', font = "Arial", cairo = TRUE,   
           width = 4, height = 3.5, bg = "transparent")
-
 # liver2
 ElbowPlot(liver2SCT1)
 graph2svg(x = NULL, file='3_1-ElbowPlot_liv2', font = "Arial", cairo = TRUE,   
           width = 4, height = 3.5, bg = "transparent")
-
 # liver3
 ElbowPlot(liver3SCT1)
 graph2svg(x = NULL, file='3_1-ElbowPlot_liv3', font = "Arial", cairo = TRUE,   
           width = 4, height = 3.5, bg = "transparent")
-
 # liver4
 ElbowPlot(liver4SCT1)
 graph2svg(x = NULL, file='3_1-ElbowPlot_liv4', font = "Arial", cairo = TRUE,   
           width = 4, height = 3.5, bg = "transparent")
-
 
 ## save the object at this point
 saveRDS(liver1SCT1, file = "Liver1_AftCluster_Protc.rds")
 saveRDS(liver2SCT1, file = "Liver2_AftCluster_Protc.rds")
 saveRDS(liver3SCT1, file = "Liver3_AftCluster_Protc.rds")
 saveRDS(liver4SCT1, file = "Liver4_AftCluster_Protc.rds")
-
 
 ## Load the data
 liver1SCT1 <- readRDS("Liver1_AftCluster_Protc.rds")
@@ -549,25 +443,10 @@ liver4SCT1 <- readRDS("Liver4_AftCluster_Protc.rds")
 
 
 
-
-
-#### Finding differentially expressed features (cluster biomarker) for liver1
+## 5. Identification of cluster biomarkers
+# Finding differentially expressed features (cluster biomarker) for liver1
+# And generates an expression heatmap for given cells and features (10)
 # liver1
-obj=liver1SCT1
-# find markers for every cluster compared to all remaining cells,
-# report only the positive ones
-obj.markers <- FindAllMarkers(obj, only.pos = TRUE)
-obj.markers %>%
-  group_by(cluster) %>%
-  dplyr::filter(avg_log2FC > 1)
-liver1_marker=obj.markers
-
-
-
-###### DoHeatmap() generates an expression heatmap for given cells and features (10). 
-
-## Finding differentially expressed features (cluster biomarkers)
-# Liver1
 obj=liver1SCT1
 # find markers for every cluster compared to all remaining cells,
 # report only the positive ones
@@ -579,9 +458,6 @@ obj.markers %>%
   ungroup() -> top10
 DoHeatmap(obj, features = top10$gene) + NoLegend()
 # save it in png file
-
-#graph2svg(x = NULL, file='5-Marker for cluster_liv1', font = "Arial", cairo = TRUE,   
-#          width = 8, height = 7, bg = "transparent")
 
 #### save the file
 liver1SCT1=obj
@@ -600,13 +476,13 @@ obj=liver2SCT1
 obj.markers <- FindAllMarkers(obj, only.pos = TRUE)
 obj.markers %>%
   group_by(cluster) %>%
-  dplyr::filter(avg_log2FC > 1)
-liver2_marker=obj.markers
-
+  dplyr::filter(avg_log2FC > 1) %>%
+  slice_head(n = 10) %>%
+  ungroup() -> top10
 DoHeatmap(obj, features = top10$gene) + NoLegend()
 # save it in png file
 
-## Plot violin fig
+## Plot violin fig for biomarkers of clusters
 p1=VlnPlot(obj, features = c("Oat", "Cyp2e1", "Slc1a2", "Cyp2c29"), ncol = 2)
 p1
 graph2svg(x = NULL, file='5_1-VlnClus4&5_liv2', font = "Arial", cairo = TRUE,   
@@ -642,7 +518,6 @@ obj.markers %>%
   group_by(cluster) %>%
   dplyr::filter(avg_log2FC > 1)
 liver3_marker=obj.markers
-
 DoHeatmap(obj, features = top10$gene) + NoLegend()
 # save it in png file
 
@@ -665,7 +540,6 @@ obj.markers %>%
   group_by(cluster) %>%
   dplyr::filter(avg_log2FC > 1)
 liver4_marker=obj.markers
-
 DoHeatmap(obj, features = top10$gene) + NoLegend()
 # save it in png file
 
@@ -678,15 +552,11 @@ liver4SCT1 <- readRDS("liver4_final.rds")
 
 
 
-
-######## Cell type annotation by GPT-4 #############
-# Annotate cell types by OpenAI GPT models in a Seurat pipeline or with a custom gene list. 
-# If used in a Seurat pipeline, Seurat FindAllMarkers() function needs to be run first 
-# and the differential gene table generated by Seurat will serve as the input.
+## 6. Cell type annotation 
+##    a. Automatic annotation using GPT
 
 # IMPORTANT! Assign your OpenAI API key. See Vignette for details
 Sys.setenv(OPENAI_API_KEY = 'xx')
-
 
 # Assume you have already run the Seurat pipeline https://satijalab.org/seurat/
 # "obj" is the Seurat object; "markers" is the output from FindAllMarkers(obj)
@@ -701,34 +571,23 @@ markers = all_markers
 res <- gptcelltype(markers, tissuename = 'mouse liver', model = 'gpt-4')
 res
 write.csv(res, 'Annotation_liv2.csv')
-
-
 celltype <- c("0: Hepatocytes1", "1: Hepatocytes2", "2: Hepatocytes3", "3: Kuffer cells", "4: Hepatocytes4","5: Hepatocytes5",
               "6: Hepatocytes6", "7: Hepatic Stellate Cells", "8: Hepatocytes7", "9: Macrophages", "10: Erythrocytes",
               "11: B cells", "12: Immune Cells", "13: Hepatocytes8")
-
-
 liver2SCT2=liver2SCT1
 names(celltype) <- levels(liver2SCT2)
 liver2SCT2 <- RenameIdents(liver2SCT2, celltype)
-
-# Assign cell type annotation back to Seurat object
-# liver.merge1=liver.merge
-# liver.merge1@meta.data$celltype <- as.factor(res[as.character(Idents(liver.merge1))])
 
 # Visualize cell type annotation on UMAP
 DimPlot(liver2SCT2, label = TRUE)
 graph2svg(x = NULL, file='10-3-Liv2_DimPlot_labeling_scRNA', font = "Arial", cairo = TRUE,   
           width = 7, height = 5, bg = "transparent")
-
 head(liver.merge1[[]])
-
 
 ### visualized in a SpatialDimPlot
 SpatialDimPlot(liver2SCT2, label = TRUE, label.size = 4)
 graph2svg(x = NULL, file='9-liv2_SpatialDimPlot', font = "Arial", cairo = TRUE,   
           width = 8, height = 6, bg = "transparent")
-
 
 ###### save file
 saveRDS(liver2SCT2, file = "liv2_SCT2_Prtc.rds")
@@ -739,9 +598,8 @@ liver2SCT2 <- readRDS("liv2_SCT2_Prtc.rds")
 
 
 
-
-
-####### Deconvolution Method: SpatialDWLS ##################
+##  b. Annotation via deconvolution using a scRNA-seq reference 
+##  Methods: DWLS
 #Install Giotto Suite
 devtools::install_version("Matrix", version = "1.6-5")
 install.packages("terra")
@@ -752,8 +610,6 @@ devtools::install_github("drieslab/GiottoClass@dev")
 devtools::install_github("drieslab/GiottoUtils@dev")
 remotes::install_github("drieslab/GiottoData")
 pak::pkg_install("drieslab/Giotto")
-
-
 
 ### Conversion of Seurat V5 to Giotto
 # Load required Libraries
@@ -768,27 +624,20 @@ library(SpatialExperiment)
 library(SummarizedExperiment)
 library(spacexr)
 
-
 #### Load the scRNAseq Reference
-
 combined <- readRDS("RefLivcombined.rds")
 ref = combined
 
 # Downsample 200 cells per identity group (cell type) (This step is to save time)
 seurat_obj = ref
-head(seurat_obj@meta.data)
 Idents(seurat_obj) <- "celltype"
 seurat_downsampled <- subset(seurat_obj, downsample = 200)
-table(seurat_downsampled$celltype)
-table(seurat_obj$celltype)
 
 # Convert Seurat object to Giotto
-packageVersion("Seurat")
 ref = seurat_downsampled
 head(ref@assays)
 ref1 <- seuratToGiottoV5(sobject = ref, spatial_assay = "SCT")
 table(ref1@feat_metadata$cell$rna$celltype)
-
 giotto_SC = ref1
 giotto_SC <- normalizeGiotto(giotto_SC)
 
@@ -799,9 +648,7 @@ markers_scran <- findMarkers_one_vs_all(gobject = giotto_SC,
                                         expression_values = "normalized",
                                         cluster_column = "celltype", 
                                         min_feats = 3)
-
 top_markers <- markers_scran[, head(.SD, 10), by = "cluster"]$feats
-
 
 ## Create the signature matrix
 sign_matrix <- makeSignMatrixDWLSfromMatrix(
@@ -812,14 +659,11 @@ sign_matrix <- makeSignMatrixDWLSfromMatrix(
   sign_gene = top_markers)
 head(sign_matrix)
 
-
 ### Load Seurat object for annotation
 liver2SCT2 <- readRDS("liv2_SCT2_prtc.rds")
 Obj1 <- liver2SCT2
 
 # Convert Seurat object to Giotto
-head(Obj1@assays)
-head(Obj1@meta.data)
 Obj1$cell_type <- Obj1$seurat_clusters
 liverG <- seuratToGiottoV5(sobject = Obj1, spatial_assay = "Spatial")
 
@@ -830,7 +674,6 @@ liverG
 g <- liverG 
 showGiottoCellMetadata(g)
 
-
 ## Run the DWLS Deconvolution
 g <- runDWLSDeconv(g,
                    sign_matrix = sign_matrix,
@@ -838,17 +681,11 @@ g <- runDWLSDeconv(g,
                    n_cell = 10, #n_cell = 10,
                    return_gobject = TRUE)
 
-head(pDataDT(g))
-head(g@spatial_enrichment$cell$rna$DWLS@enrichDT)
-table(g@spatial_enrichment$cell$rna$DWLS@enrichDT$`Endothelial cells`)
-
 ## Visualize
 spatDeconvPlot(g, 
                show_image = FALSE,
                radius = 50
 )
-
-
 
 ### Conversion of Giotto to Seurat V5
 # Reverting GiottoObj to Seurat
@@ -859,22 +696,16 @@ G_labled
 
 
 
-
-
-
-
-####### Deconvolution Method: Robust Cell Type Decomposition (RCTD)##################
+##  b. Annotation via deconvolution using a scRNA-seq reference 
+##  Methods: Robust Cell Type Decomposition (RCTD)
 if (!requireNamespace("spacexr", quietly = TRUE)) {
   devtools::install_github("dmcable/spacexr", build_vignettes = FALSE)
 }
 library(spacexr)
 
-
 # load in the reference scRNA-seq dataset
 combined <- readRDS("RefLivcombined.rds")
 ref = combined
-
-head(ref@meta.data)
 Idents(ref) <- "celltype"
 
 counts <- ref[["RNA"]]$counts
@@ -886,7 +717,6 @@ cluster <- droplevels(cluster)
 # create the RCTD reference object
 reference <- Reference(counts, cluster, nUMI)
 head(reference@cell_types)
-
 
 # get rid of the number of cells < 25, 
 class(reference)
@@ -908,12 +738,6 @@ selected_cells <- names(cell_types)[cell_types %in% valid_celltypes]
 length(selected_cells)  # see how many
 head(selected_cells)    # see context
 
-class(selected_cells)
-str(selected_cells)
-slotNames(selected_cells)
-
-
-
 # subset counts、nUMI、cell_types
 counts <- reference@counts[, selected_cells]
 nUMI <- reference@nUMI[selected_cells]
@@ -927,15 +751,10 @@ reference_subset <- new("Reference",
                         nUMI = nUMI,
                         cell_types = cell_types)
 
-table(cell_types)
-levels(cell_types)
-
-
 # Load Seurat object and generate query object
 liver2SCT2 <- readRDS("liv2_SCT2_prtc.rds")
 Obj1 <- liver2SCT2
 liverRCTD = Obj1
-
 
 counts_hd <- liverRCTD[["SCT"]]$counts
 liverRCTD_cells_hd <- colnames(liverRCTD[["SCT"]])
@@ -993,152 +812,8 @@ liver2SCT2 <- readRDS("liv2_SCT2_Prtc.rds")
 
 
 
-
-# ############### Annotation using integration with a scRNA-seq reference ###############
-# # Sinlge-cell RNA-seq data download: (https://www.livercellatlas.org/download.php)--'Liver Cell Atlas: Mouse NAFLD' 
-# library(Seurat)
-# #data_dir = "C:/Users/wddon/Downloads/rawData_mouseNafld/rawData_mouseNafld/countTable_mouseNafld"
-# 
-# mouseMafld = Read10X(data.dir="Ref_mouseNafld", gene.column = 1)
-# #mouseMafld1 = Read10X(data.dir="Ref_mouseNafld_overlapABs", gene.column = 1)
-# 
-# head(mouseMafld)
-# 
-# s1 = CreateSeuratObject(counts = mouseMafld, min.cells=3, min.features = 200, project = "RefMafld")
-# head(s1@meta.data)
-# 
-# #s2 <- SCTransform(s1, ncells = 3000, variable.features.rv.th=1, verbose = TRUE)
-# 
-# pancreas.ref=s1
-# pancreas.ref <- NormalizeData(pancreas.ref)
-# pancreas.ref <- FindVariableFeatures(pancreas.ref)
-# pancreas.ref <- ScaleData(pancreas.ref)
-# 
-# pancreas.ref <- RunPCA(pancreas.ref, npcs=15, verbose=TRUE)
-# pancreas.ref <- FindNeighbors(pancreas.ref, dims = 1:15, verbose=TRUE)
-# pancreas.ref <- FindClusters(pancreas.ref, verbose=TRUE)
-# 
-# pancreas.ref <- RunUMAP(pancreas.ref, dims = 1:15, verbose=TRUE)
-# # DimPlot(pancreas.ref, group.by = c("celltytpe", "tech"))
-# DimPlot(pancreas.ref)
-# 
-# 
-# # Make a new seurat
-# a=read.csv("annot_mouseNafldAll.csv", header=TRUE)
-# 
-# head(pancreas.ref@meta.data)
-# #pancreas.ref@meta.data$CellTypes <- a$annot
-# 
-# 
-# metaRe=pancreas.ref@meta.data
-# head(metaRe)
-# metaRe$cell = row.names(metaRe)
-# 
-# a=read.csv("annot_mouseNafldAll.csv", header=TRUE)
-# head(a)
-# a1=a[,c(-1, -2, -3,-5,-7,-8,-9)]
-# head(a1)
-# 
-# metaRe1=merge(metaRe, a1, by="cell")
-# head(metaRe1)
-# 
-# rownames(metaRe1)=metaRe1$cell
-# metaRe2=metaRe1[,-1]
-# head(metaRe2)
-# 
-# 
-# cout = pancreas.ref@assays$RNA$counts
-# head(cout)
-# dim(cout)
-# cellId=a1$cell
-# cout1=cout[,cellId]
-# dim(cout1)
-# 
-# RefLiv = CreateSeuratObject(counts=cout1, project = "RefLiv")
-# RefLiv1=AddMetaData(RefLiv, metadata = metaRe2)
-# 
-# ##normalize UMAP
-# pancreas.ref=RefLiv1
-# pancreas.ref <- NormalizeData(pancreas.ref)
-# pancreas.ref <- FindVariableFeatures(pancreas.ref)
-# pancreas.ref <- ScaleData(pancreas.ref)
-# 
-# pancreas.ref <- RunPCA(pancreas.ref, npcs=30, verbose=TRUE)
-# pancreas.ref <- FindNeighbors(pancreas.ref, dims = 1:30, verbose=TRUE)
-# pancreas.ref <- FindClusters(pancreas.ref, verbose=TRUE)
-# 
-# pancreas.ref <- RunUMAP(pancreas.ref, dims = 1:30, verbose=TRUE)
-# # DimPlot(pancreas.ref, group.by = c("celltytpe", "tech"))
-# DimPlot(pancreas.ref, group.by = "annot", label = TRUE)
-# graph2svg(x = NULL, file='10-RefLiv_Mafld', font = "Arial", cairo = TRUE,   
-#           width = 5.5, height = 4, bg = "transparent")
-# 
-# 
-# ###### save file
-# saveRDS(pancreas.ref, file = "RefMafld.rds")
-# 
-# ## Load the data
-# pancreas.ref <- readRDS("RefMafld.rds")
-# 
-# 
-# #Next, we integrate the datasets into a shared reference.
-# #Please see our introduction to integration vignette
-# #pancreas.ref <- IntegrateLayers(object = pancreas.ref, method = CCAIntegration, orig.reduction = "pca",
-# #                                new.reduction = "integrated.cca", verbose = FALSE)
-# 
-# 
-# 
-# # put our Liv2 as the query datasets
-# 
-# pancreas.query <- liver1
-# pancreas.query <- NormalizeData(pancreas.query)
-# pancreas.query <- FindVariableFeatures(pancreas.query)
-# pancreas.query <- ScaleData(pancreas.query)
-# 
-# pancreas.query <- RunPCA(pancreas.query, npcs=30, verbose=TRUE)
-# pancreas.query <- FindNeighbors(pancreas.query, dims = 1:30, verbose=TRUE)
-# pancreas.query <- FindClusters(pancreas.query, verbose=TRUE)
-# 
-# 
-# pancreas.anchors <- FindTransferAnchors(reference = pancreas.ref, query = pancreas.query, dims = 1:30,
-#                                         reference.reduction = "pca")
-# predictions <- TransferData(anchorset = pancreas.anchors, refdata = pancreas.ref$annot, dims = 1:30)
-# pancreas.query <- AddMetaData(pancreas.query, metadata = predictions)
-# 
-# ## make UMAP
-# pancreas.query1 <- SCTransform(pancreas.query, assay = "Spatial", verbose = TRUE)
-# 
-# pancreas.query1 <- RunPCA(pancreas.query1, npcs=30, verbose=TRUE)
-# pancreas.query1 <- FindNeighbors(pancreas.query1, dims = 1:30, verbose=TRUE)
-# pancreas.query1 <- FindClusters(pancreas.query1, verbose=TRUE)
-# 
-# pancreas.query1 <- RunUMAP(pancreas.query1, dims = 1:30, verbose=TRUE)
-# 
-# 
-# # DimPlot(pancreas.ref, group.by = c("celltytpe", "tech"))
-# DimPlot(pancreas.query1, group.by = "predicted.id", label = TRUE)
-# DimPlot(pancreas.query1, label = TRUE)
-# graph2svg(x = NULL, file='10-RefLiv_Mafld', font = "Arial", cairo = TRUE,   
-#           width = 5.5, height = 4, bg = "transparent")
-
-
-
-
- 
-## SCTransform method to annotating (need to futher explore)
-# obj=pancreas.ref
-# obj <- SCTransform(obj, ncells = 3000, verbose = TRUE)
-# 
-# obj <- RunPCA(obj, assay = "SCT", verbose = FALSE)
-# obj <- FindNeighbors(obj, reduction = "pca", dims = 1:30)
-# obj <- FindClusters(obj, verbose = FALSE, resolution = 1) #resolution between 0.4-1.2 typically returns good results
-# obj <- RunUMAP(obj, reduction = "pca", dims = 1:30)
-
-
-
-
-
-########### Manual annotation ##################
+## 6. Cell type annotation 
+##     c. Manual annotation
 ## loading packages
 library(clusterProfiler)
 
@@ -1148,7 +823,6 @@ obj=liver2SCT2
 
 ## load the biomarkers of cell types
 cellmarker = read.gmt("mouse_liver_celltype_markers_MASLD.gmt")
-
 
 ## Plot biomarkers in UMAP or spatial slide
 SpatialFeaturePlot(obj, features = c("Cyp2f2", "Hal", "Gls2"))
@@ -1165,17 +839,10 @@ graph2tif(x = NULL, file='5_x1-HepPV_liv2', font = "Arial", cairo = TRUE,
 
 
 
-
-
-
-
-##### 3.7 DEG analysis, pathway enrichment analysis and SVGs ####
-##################### DEG analysis ########################
-
-##### Find difference between hepatocytes (0, 1) , here we compare cluster1 to cluster0
+## 7. DEG analysis, pathway enrichment analysis and Spatially Variable Genes (SVGs) analysis
+## Find difference between hepatocytes (0, 1) , here we compare cluster1 to cluster0
 liver2SCT2 <- readRDS("liv2_SCT2_prtc.rds")
 liver.mergeIntegr=liver2SCT2
-
 de_markers <- FindMarkers(liver.mergeIntegr, ident.2 = "0: Hepatocytes1", ident.1 = "1: Hepatocytes2")
 head(de_markers)
 write.csv(de_markers, 'DEhep1vs0.csv')
@@ -1187,17 +854,12 @@ write.csv(de_markers, 'DEhep1vs0.csv')
 par(mfrow=c(1,1))
 # Make a basic volcano plot
 with(de_markers, plot(avg_log2FC, -log10(p_val_adj), pch=20, main="Volcano plot for hepatocytes 1 vs 0 (blue)", xlim=c(-3,3)))
-
 # my setting: padj<.05&abs(log2FC)>1
 with(subset(de_markers, p_val_adj<.05 & abs(avg_log2FC)>0.5), points(avg_log2FC, -log10(p_val_adj), pch=20, col="blue"))
-
 graph2svg(x = NULL, file='10-4-Volcano_Hep1vs0', font = "Arial", cairo = TRUE,   
           width = 3, height = 3.5, bg = "transparent")
 
-
-
-#### GO enrichment analysis for clusters 1 vs 0
-
+# Pathway enrichment analysis: GO enrichment analysis for clusters 1 vs 0
 BiocManager::install("GEOquery")
 BiocManager::install("pathview")
 BiocManager::install("KEGG.db")
@@ -1214,7 +876,6 @@ library(enrichplot)
 library(clusterProfiler)
 library(org.Hs.eg.db)
 library(GO.db)
-
 library(GOstats)
 library ("org.Mm.eg.db")
 library(Ipaper)
@@ -1230,14 +891,11 @@ head(res_gvv)
 colnames(res_gvv)[2] <- "log2FoldChange"
 colnames(res_gvv)[5] <- "padj"
 head(res_gvv)
-
 summary(res_gvv, res_gvv$padj < 0.05 & res_gvv$log2FoldChange>0)
-
 
 ### cnetplot for GO log2FC >1&padj < 0.01
-###Prapation dataset for enrichment analysis:log2FC >1&padj < 0.01
+###Prapation dataset for enrichment analysis:abs(log2FoldChange) >0 & padj < 0.05
 summary(res_gvv, res_gvv$padj < 0.05 & res_gvv$log2FoldChange>0)
-
 res_gvvOrdered1 <- res_gvv[order(res_gvv$padj),]
 res_gvvSig1 <- subset(res_gvvOrdered1, padj < 0.05)
 res_gvvSig1
@@ -1248,15 +906,12 @@ write.csv(as.data.frame(res_gvvSig2), "DE_HSC_Padj05logFC1_Circle.csv")
 res_gvvSig2$SYMBOL=rownames(res_gvvSig2)
 
 ### Get dataform
-BiocManager::install("ggnewscale")
 library(ggnewscale)
-
 gene <- res_gvvSig2 [,6]
 gene.df <- bitr(gene, fromType = "SYMBOL",
                 toType = "ENTREZID",
                 OrgDb = org.Mm.eg.db)
 gene.df
-
 ego_all <- enrichGO(gene = gene.df$ENTREZID,
                     OrgDb = org.Mm.eg.db,
                     keyType = "ENTREZID",
@@ -1280,59 +935,13 @@ cnetplot(oragnx, foldChange=geneList,
          node_label='gene',
          showCategory = 8)
 
-?cnetplot
-
 graph2svg(x = NULL, file='10-5-circle_Hepa1vs0', font = "Arial", cairo = TRUE,   
           width = 9, height = 5, bg = "transparent")
 
 
-fig1=cnetplot(oragnx, foldChange=geneList, 
-              circular = TRUE, 
-              colorEdge = TRUE)
-write_fig(fig1, "5_GO_circle.tif", show = FALSE, devices = "tif", width = 15,
-          height = 8)
-dev.off()
 
 
-
-############## Heatmap of Top50 gene (does not work)
-res_gvv=de_markers
-
-head(res_gvv)
-
-colnames(res_gvv)[2] <- "log2FoldChange"
-colnames(res_gvv)[5] <- "padj"
-head(res_gvv)
-
-res_gvvOrdered1 <- res_gvv[order(res_gvv$padj),]
-res_gvvSig1 <- subset(res_gvvOrdered1, padj < 0.05)
-res_gvvSig1
-res_gvvOrdered2 <- res_gvvSig1[order(res_gvvSig1$log2FoldChange),]
-res_gvvSig2 <- subset(res_gvvOrdered2, abs(log2FoldChange) >0)
-res_gvvSig2
-dim(res_gvvSig2)
-#write.csv(as.data.frame(res_gvvSig2), "HSCpadj0.05logFC1.5_results.csv")
-
-res_gvvSig3 <- res_gvvSig2[order(abs(res_gvvSig2$log2FoldChange), decreasing = T),]
-res_gvvSig3
-res_gvvSig3 <- res_gvvSig3[1:50, ]
-#write.csv(as.data.frame(res_gvvSig3), "Top50HscTrtVsCtl.csv")
-
-mat  <- assay(vsd) [row.names(res_gvvSig3),]
-mat  <- mat - rowMeans(mat)
-anno <- as.data.frame(colData(vsd)[, "condition"])
-pheatmap(mat)
-heatmap=pheatmap(mat)
-write_fig(heatmap, "4_heatmap_topDEG_Padj0.01logFC2.tif", show = FALSE, devices = "tif", width = 5,
-          height = 20)
-dev.off()
-
-
-
-
-
-
-###### spatially variable genes (SVGs) ################
+# spatially variable genes (SVGs) analysis--pre-annotated anatomical regions
 # Spatial heterogeneity
 ## load packages
 library(GSVA)
@@ -1347,20 +956,12 @@ library(GSEABase)
 library(org.Dm.eg.db)
 library(clusterProfiler)
 
-
 ## Load the data
 liver2SCT2 <- readRDS("liv2_SCT2_prtc.rds")
 
-
 ## Manually select spots interactively
 # Launch an interactive plot to select spots
-#seurat_obj = liver1SCT1
 seurat_obj <- liver2SCT2
-
-head(seurat_obj@meta.data)
-colnames(seurat_obj@meta.data)
-seurat_obj@images$condition2a@scale.factors
-seurat_obj@images$condition2a@boundaries$centroids@coords
 seurat_obj$celltype = Idents(seurat_obj)
 
 ## use condition2a as example 
@@ -1368,12 +969,10 @@ SpatialDimPlot(seurat_obj, group.by = "celltype", images = "condition2a", alpha 
 graph2tif(x = NULL, file='11_1-SpatialMetab', font = "Arial", cairo = TRUE,   
           width = 6, height = 4, bg = "transparent") 
 
-
 # Prepare input data and Coordinates
 data.input1 = Seurat::GetAssayData(seurat_obj, layer = "data", assay = "SCT") # normalized data matrix
 spatial.locs1 = Seurat::GetTissueCoordinates(seurat_obj, scale = NULL, cols = c("imagerow", "imagecol")) 
 coords=spatial.locs1
-
 
 # select region 1_central vein
 library(ggplot2)
@@ -1382,7 +981,6 @@ p <- ggplot(coords, aes(x = x, y = y)) +
   #scale_y_reverse() +
   #scale_x_reverse() +
   theme_void()
-
 selected <- CellSelector(p)
 str(selected)
 head(colnames(seurat_obj))
@@ -1392,14 +990,10 @@ head(colnames(seurat_obj))
 seurat_obj$region <- "other"
 # give names for selected region
 seurat_obj$region[selected] <- "Zone3CV"
-
 table(seurat_obj$region)
-
 SpatialDimPlot(seurat_obj, group.by = "region", images = "condition2a", alpha = c(0.5, 0.5))
 graph2tif(x = NULL, file='11_2-SpatialMetab_CV', font = "Arial", cairo = TRUE,   
           width = 6, height = 4, bg = "transparent") 
-
-
 
 # select region 2_portal vein
 library(ggplot2)
@@ -1408,7 +1002,6 @@ p <- ggplot(coords, aes(x = x, y = y)) +
   #scale_y_reverse() +
   #scale_x_reverse() +
   theme_void()
-
 selected <- CellSelector(p)
 str(selected)
 head(colnames(seurat_obj))
@@ -1416,9 +1009,7 @@ head(colnames(seurat_obj))
 # Label selected spots
 # give names for selected region
 seurat_obj$region[selected] <- "Zone1PV"
-
 table(seurat_obj$region)
-
 SpatialDimPlot(seurat_obj, group.by = "region", images = "condition2a", alpha = c(0.5, 0.5))
 graph2tif(x = NULL, file='5_x-SpatialMetab_CV_PV', font = "Arial", cairo = TRUE,   
           width = 6, height = 4, bg = "transparent") 
@@ -1433,14 +1024,12 @@ liver2_CV-PV <- readRDS("liver2_CV-PV_prtc.rds")
 
 
 ####### DEG analysis between PV and CV 
-
 ##### Find the DE btw ctl and treatment in the same cell types
 table(seurat_obj$region)
 head(seurat_obj@meta.data)
 
 ### add region as Idents
 Idents(seurat_obj) <- "region"
-
 de_markers <- FindMarkers(seurat_obj, 
                               ident.1 = "Zone3CV", 
                               ident.2 = "Zone1PV",
@@ -1448,38 +1037,29 @@ de_markers <- FindMarkers(seurat_obj,
                               logfc.threshold = 0.25, 
                               min.pct = 0.1)
 
-
 ##### Volcano Plot
 ### Zone3CV vs Zone1PV
 #reset par
 par(mfrow=c(1,1))
 # Make a basic volcano plot
 with(de_markers, plot(avg_log2FC, -log10(p_val_adj), pch=20, main="SVGs_Zone3CV vs Zone1PV (blue)", xlim=c(-3,3)))
-
 # my setting: padj<.05&abs(log2FC)>1
 with(subset(de_markers, p_val_adj<.05 & abs(avg_log2FC)>0.5), points(avg_log2FC, -log10(p_val_adj), pch=20, col="blue"))
-
 graph2tif(x = NULL, file='5_x-Volcano_SVGs', font = "Arial", cairo = TRUE,   
           width = 3.8, height = 3.5, bg = "transparent")
 
 
 
 
-
-
-############ To identify specific spatial features/gene (***takes 6 hours***)
+# Spatially Variable Genes (SVGs) analysis--annotation-free (***takes 6 hours***)
 ###### whose are expressed only in specific spatial locations
 liver2SCT2 <- readRDS("liv2_SCT2_prtc.rds")
-
 liver2SCT3 <- FindSpatiallyVariableFeatures(liver2SCT2, assay = "SCT", selection.method = "moransi",
                                         features = rownames(liver2SCT2), r.metric = 5, slot = "data")
-
 top.features <- head(rownames(liver2SCT3), 6)
 SpatialFeaturePlot(liver2SCT3, features = top.features, ncol = 3, alpha = c(0.1, 1))
-
 graph2tif(x = NULL, file='5_x-SVGs', font = "Arial", cairo = TRUE,   
           width = 8, height = 6, bg = "transparent") 
-
 
 ###### save file
 saveRDS(liver2SCT3, file = "liver2SCT3SVGs_prtc.rds")
@@ -1490,66 +1070,7 @@ liver2SCT3 <- readRDS("liver2SCT3SVGs_prtc.rds")
 
 
 
-
-
-
-
-############# In order to work with multiple slices in the same Seurat object (only merge but not integration)
-### we provide the merge function.
-# To easily tell which original object any particular cell came from, you can set the add.cell.ids parameter with an c(x, y) vector
-# which will prepend the given identifier to the beginning of each cell name.
-
-## Load the data
-liver1SCT <- readRDS("liver1SCT_Prtc.rds")
-liver2SCT <- readRDS("liver2SCT_Prtc.rds")
-liver3SCT <- readRDS("liver3SCT_Prtc.rds")
-liver4SCT <- readRDS("liver4SCT_Prtc.rds")
-
-## merge data
-liver.merge <- merge(liver1SCT, y=c(liver2SCT, liver3SCT, liver4SCT), add.cell.ids = c("condition1a", "condition2a", "condition1b", "condition2b"), project = "STprotocol")
-levels(liver.merge)
-
-
-table(liver.merge$orig.ident)
-liver.merge@active.ident
-head(liver.merge[[]])
-tail(liver.merge[[]])
-
-LayerData(liver.merge)[1:10, 1:15]
-
-### This then enables joint dimensional reduction and clustering on the underlying RNA expression data.
-DefaultAssay(liver.merge) <- "SCT"
-VariableFeatures(liver.merge) <- c(VariableFeatures(liver1SCT), VariableFeatures(liver2SCT),
-                                   VariableFeatures(liver3SCT), VariableFeatures(liver4SCT))
-#VariableFeatures(liver.merge) <- c(VariableFeatures(liver1SCT1), VariableFeatures(liver2SCT1))
-liver.merge <- RunPCA(liver.merge, verbose = T)
-liver.merge <- FindNeighbors(liver.merge, dims = 1:30)
-liver.merge <- FindClusters(liver.merge, verbose = T)
-liver.merge <- RunUMAP(liver.merge, dims = 1:30)
-
-
-### the data can be jointly visualized in a single UMAP plot.
-DimPlot(liver.merge, reduction = "umap", group.by = c("ident", "orig.ident"), label = TRUE)
-graph2svg(x = NULL, file='9-merge_DimPlot', font = "Arial", cairo = TRUE,
-          width = 7, height = 4, bg = "transparent")
-#graph2svg(x = NULL, file='9-1-merge_DimPlot_noInte', font = "Arial", cairo = TRUE,
-#          width = 7, height = 4, bg = "transparent")
-#without labeling
-DimPlot(liver.merge, reduction = "umap", group.by = c("ident", "orig.ident"), label = FALSE)
-graph2svg(x = NULL, file='9-merge_DimPlot_noLabel', font = "Arial", cairo = TRUE,
-          width = 7, height = 4, bg = "transparent")
-# graph2svg(x = NULL, file='9-1-merge_DimPlot_noLabel_noInte', font = "Arial", cairo = TRUE,
-#           width = 7, height = 4, bg = "transparent")
-
-
-
-
-
-
-
-
-
-########### Integration: In order to work with multiple slices (with Merge and integration), and also compare difference btw diff conditions
+## 8. Integrative analysis across multiple samples or conditions
 ## Load the data
 liver1SCT <- readRDS("liver1SCT_Prtc.rds")
 liver2SCT <- readRDS("liver2SCT_Prtc.rds")
@@ -1559,19 +1080,12 @@ liver4SCT <- readRDS("liver4SCT_Prtc.rds")
 ### we provide the merge function.
 liver.merge <- merge(liver1SCT, y=c(liver2SCT, liver3SCT, liver4SCT), add.cell.ids = c("condition1a", "condition2a", "condition1b", "condition2b"), project = "STprotocol")
 levels(liver.merge)
-
-table(liver.merge$orig.ident)
-liver.merge@active.ident
-head(liver.merge[[]])
-tail(liver.merge[[]])
-
 
 # this function uses minimum of the median UMI (calculated using the raw UMI counts) of individual objects
 # to reverse the individual SCT regression model using minimum of median UMI as the sequencing depth covariate. 
 liver.merge=PrepSCTFindMarkers(liver.merge, assay = "SCT", verbose = TRUE)
 
-
-########## integrate data from the two conditions (control and treatment)
+# integrate data from the two conditions (control1 and control2)
 # When aligning two genome sequences together,
 # identification of shared/homologous regions can help to interpret differences
 # between the sequences as well.
@@ -1583,21 +1097,16 @@ liver.mergeIntegr[["SCT"]]
 DefaultAssay(liver.mergeIntegr) <- "SCT"
 VariableFeatures(liver.mergeIntegr) <- c(VariableFeatures(liver1SCT), VariableFeatures(liver2SCT),
                                          VariableFeatures(liver3SCT), VariableFeatures(liver4SCT))
-#VariableFeatures(liver.mergeIntegr) <- c(VariableFeatures(liver1SCT1), VariableFeatures(liver2SCT1))
-
 liver.mergeIntegr <- RunPCA(liver.mergeIntegr, npcs = 30, verbose = FALSE)
 
 # integration (HarmonyIntegration)
 liver.mergeIntegr <- IntegrateLayers(object = liver.mergeIntegr, method = HarmonyIntegration, orig.reduction = "pca",
                                      normalization.method = "SCT", new.reduction = "harmony", verbose = T)
-
 # we can now visualize and cluster the datasets.
 liver.mergeIntegr <- FindNeighbors(liver.mergeIntegr, reduction = "harmony", dims = 1:30)
 liver.mergeIntegr <- FindClusters(liver.mergeIntegr, verbose = FALSE, resolution = 0.8, cluster.name = "harmony_clusters") # 17 cluster
 liver.mergeIntegr <- RunUMAP(liver.mergeIntegr, reduction = "harmony",
                              dims = 1:30, reduction.name = "umap.harmony")
-
-
 # Visualization
 DimPlot(liver.mergeIntegr, reduction = "umap.harmony", label = TRUE, group.by = c("ident", "orig.ident"))
 graph2svg(x = NULL, file='17-clusterMergeIntegr_DimPlot', font = "Arial", cairo = TRUE,   
@@ -1614,8 +1123,6 @@ graph2svg(x = NULL, file='17_2-clusterMergeIntegr_SpatialDimPlot', font = "Arial
           width = 15, height = 6, bg = "transparent")
 
 
-
-
 ### Annotation by GPT-4: the name is same as the merge before integration
 # IMPORTANT! Assign your OpenAI API key. See Vignette for details
 Sys.setenv(OPENAI_API_KEY = 'xx')
@@ -1628,14 +1135,10 @@ library(openai)
 #liver.merge=PrepSCTFindMarkers(liver.merge, assay = "SCT", verbose = TRUE)
 all_markers = FindAllMarkers(liver.mergeIntegr, assay = "SCT")
 markers = all_markers
-
 # GPT-4 annotation
 #res <- gptcelltype(markers, tissuename = 'mouse liver', model = 'gpt-4')
 res <- gptcelltype(markers, tissuename = 'liver', model = 'gpt-4')
 res
-write.csv(res, 'Celltype_Integ_v10.csv')
-#write.csv(res, 'AnnoInteg1.csv')
-
 
 celltype <- c("0: Hepatocytes1", "1: Hepatocytes2", "2: Hepatocytes3", "3: Hepatocytes4", "4: Hepatocytes5","5: Hepatocytes, HSC",
               "6: HSC", "7: Hepatocytes6", "8: Erythrocytes", "9: Kupffer Cells, MΦ", "10: B cells",
@@ -1645,10 +1148,6 @@ liver.mergeIntegr1=liver.mergeIntegr
 names(celltype) <- levels(liver.mergeIntegr1)
 liver.mergeIntegr1 <- RenameIdents(liver.mergeIntegr1, celltype)
 
-# Assign cell type annotation back to Seurat object
-# liver.merge1=liver.merge
-# liver.merge1@meta.data$celltype <- as.factor(res[as.character(Idents(liver.merge1))])
-
 # Visualize cell type annotation on UMAP
 DimPlot(liver.mergeIntegr1)
 graph2svg(x = NULL, file='18-Integrat_DimPlot_labeling', font = "Arial", cairo = TRUE,   
@@ -1656,18 +1155,13 @@ graph2svg(x = NULL, file='18-Integrat_DimPlot_labeling', font = "Arial", cairo =
 
 head(liver.merge1[[]])
 
-
-
 ### save file
 saveRDS(liver.mergeIntegr1, file = "liver_merge_integration1_protc.rds")
-
-
 ## Load the data
 liver.mergeIntegr1 <- readRDS("liver_merge_integration1_protc.rds")
 
 
-
-############# Compare HSC cell features between ctl vs treatment ###########
+## Compare HSC cell features between ctl vs treatment ###########
 ## Load the data
 liver.mergeIntegr1 <- readRDS("liver_merge_integration1_protc.rds")
 head(liver.mergeIntegr1[[]])
@@ -1683,48 +1177,31 @@ table(immune.combined$celltype.stim)
 demarkerHSC <- FindMarkers(immune.combined, ident.1 = "6: HSC_GDF15_1", ident.2 = "6: HSC_PairFed1", verbose = FALSE)
 head(demarkerHSC, n = 15)
 write.csv(demarkerHSC, 'DE_HSC_ctlTrt.csv')
-
 demarkerHSC <- read.csv("DE_HSC_ctlTrt.csv", header=TRUE)
 head(demarkerHSC)
 row.names(demarkerHSC)=demarkerHSC$X
 demarkerHSC=demarkerHSC[,-1]
-
 de_markers=demarkerHSC
 
 
-
-
-
-############## Volcano Plot with label gene names.
+## Volcano Plot with label gene names.
 install.packages("ggpubr")
 install.packages("ggthemes")
-
 library(ggpubr)
 library(ggthemes)
 
-###GDF15 vs Vehicle
-#res_gvv1=as.data.frame(res_gvv)
-#res_gvv1=as.data.frame(res_pvv)
 de_markers=as.data.frame(de_markers)
-
 deg.data <-de_markers
-# colnames(deg.data)[2] <- "log2FC"
-# colnames(deg.data)[5] <- "logQ"
-
 head(deg.data)
 deg.data$logQ <- -log10(deg.data$p_val_adj)
 deg.data$log2FC=deg.data$avg_log2FC
 deg.data$FDR=deg.data$p_val_adj
 deg.data$ID=rownames(deg.data)
 
-head(deg.data)
-
 # plot basic volcano
 ggscatter(deg.data, x = "log2FC", y = "logQ") + theme_base()
-
 # set a subcolumn and set up and down regulated genes
 deg.data$Group = "normal"
-
 deg.data$Group[which( (deg.data$FDR < 0.01) & (deg.data$log2FC > 0.5) )] = "up"
 deg.data$Group[which( (deg.data$FDR < 0.01) & (deg.data$log2FC < -0.5) )] = "down"
 
@@ -1735,28 +1212,12 @@ table(deg.data$Group)
 ggscatter(deg.data, x = "log2FC", y = "logQ",
           color = "Group") + theme_base()
 
-# change colors (palette) and plot size(size)
-ggscatter(deg.data, x = "log2FC", y = "logQ",
-          color = "Group", 
-          palette = c("green", "gray", "red"),
-          size = 1.5) + theme_base()
-
-# 为火山图添加logP分界线条(geom_hline)和logFC分界线条(geom_vline)
-ggscatter(deg.data, x = "log2FC", y = "logQ",
-          color = "Group", 
-          palette = c("green", "gray", "red"),
-          size = 1) + theme_base() + 
-  geom_hline(yintercept = 2, linetype="dashed") +
-  geom_vline(xintercept = c(-0.5,0.5), linetype="dashed")
-
 
 # add a new collumn "Label"
 deg.data$Label = ""
-
 # get gene logQ>3, |log2FC|>2
 res_gvv=deg.data
 head(res_gvv)
-
 res_gvvOrdered1 <- res_gvv[order(res_gvv$logQ),]
 res_gvvSig1 <- subset(res_gvvOrdered1, logQ > 3)
 res_gvvSig1
@@ -1765,7 +1226,6 @@ res_gvvSig2 <- subset(res_gvvOrdered2, abs(log2FC) >2)
 res_gvvSig2
 dim(res_gvvSig2)
 write.csv(as.data.frame(res_gvvSig2), "Clus4vs3logQ3logFC2_results_wt_Fibr.csv")
-
 res_gvvSig3 <- res_gvvSig2[order(abs(res_gvvSig2$log2FC), decreasing = T),]
 res_gvvSig3
 res_gvvSig3 <- res_gvvSig3[1:50, ]
@@ -1781,28 +1241,6 @@ deg.data$Label[match(deg.top20.genes, deg.data$ID)] <- deg.top20.genes
 print (deg.data$Label)
 table (deg.data$Label)
 
-# # get top 20 DEGs according to FC
-# deg.data <- deg.data[order(abs(deg.data$log2FC),decreasing = T), ]
-# log2FC.genes <- head(deg.data$ID, 20)
-# head(deg.data)
-# 
-# # get top 20 DEGs according to adjp value
-# # deg.data <- deg.data[order(deg.data$logQ)]
-# # in high expression genes，select the lowest FDR 20
-# deg.data <- deg.data[order(abs(deg.data$logQ),decreasing = T), ]
-# fdr.genes <- head(deg.data$ID, 20)
-# 
-# # combine log2FC.genes and fdr.genes，and put them in 'Label'
-# deg.top20.genes <- c(as.character(log2FC.genes), as.character(fdr.genes))
-# 
-# write.csv(as.data.frame(deg.top20.genes), "top20gene_gvp.csv")
-# 
-# deg.data$Label[match(deg.top20.genes, deg.data$ID)] <- deg.top20.genes
-# 
-# #print (deg.data$Label)
-# table (deg.data$Label)
-
-
 # change color and axis labelling to make figure looking better
 ggscatter(deg.data, x = "log2FC", y = "logQ",
           color = "Group", 
@@ -1816,27 +1254,13 @@ ggscatter(deg.data, x = "log2FC", y = "logQ",
   theme_base() + 
   geom_hline(yintercept = 3, linetype="dashed") +
   geom_vline(xintercept = c(-1,1), linetype="dashed")
-
 library(export)
 graph2svg(x = NULL, file='10-5_Volcano_HSC_label_Fibr', font = "Arial", cairo = TRUE,   
           width = 6.5, height = 3.5, bg = "transparent")
 
 
 
-
-
-########################### Enrichment analysis ######################
-################## GO enrichment analysis
-
-BiocManager::install("GEOquery")
-BiocManager::install("pathview")
-BiocManager::install("KEGG.db")
-BiocManager::install("enrichplot")
-BiocManager::install("clusterProfiler")
-BiocManager::install("AnnotationDbi")
-BiocManager::install("TxDb.Mmusculus.UCSC.mm10.knownGene")
-BiocManager::install("org.Mm.eg.db")
-
+# Enrichment analysis--GO enrichment analysis
 library(GEOquery)
 library(dplyr)
 library(pathview)
@@ -1847,7 +1271,6 @@ library(GO.db)
 library(GOstats)
 library ("org.Mm.eg.db")
 library(Ipaper)
-
 library(KEGG.db)
 
 columns(org.Mm.eg.db)
@@ -1856,7 +1279,6 @@ keytypes(org.Mm.eg.db)
 ###Prapation dataset for enrichment analysis:log2FC >0.8 &padj < 0.1
 res_gvv=deg.data
 head(res_gvv)
-
 res_gvvOrdered1 <- res_gvv[order(res_gvv$logQ),]
 res_gvvSig1 <- subset(res_gvvOrdered1, logQ > 0.05)
 res_gvvSig1
@@ -1865,7 +1287,6 @@ res_gvvSig2 <- subset(res_gvvOrdered2, abs(log2FC) >0.5)
 res_gvvSig2
 dim(res_gvvSig2)
 write.csv(as.data.frame(res_gvvSig2), "Clus4vs3logQ3logFC2_results_wt_Fibr.csv")
-
 res_gvvSig2$SYMBOL=rownames(res_gvvSig2)
 
 ### Get dataform
@@ -1887,7 +1308,6 @@ head(ego_all)
 dim(ego_all)
 write.csv(ego_all,'GO_ALL_HSC.csv')
 dev.off()
-
 dotplot(ego_all, showCategory=15)+ggtitle("GO enrichment analysis")
 dotplot1=dotplot(ego_all, showCategory=15)+ggtitle("GO enrichment analysis")
 write_fig(dotplot1, "10-6_GO enrichment analysis.tif", show = FALSE, devices = "tif", width = 8,
@@ -1895,16 +1315,8 @@ write_fig(dotplot1, "10-6_GO enrichment analysis.tif", show = FALSE, devices = "
 dev.off()
 
 
-
-
-
-
-
-
-
-
-
-##########################  pseudobulking and Perform DE analysis after pseudobulking #########
+## 9. Pseudobulk analysis
+# pseudobulking and Perform DE analysis after pseudobulking
 ### load data (we offer another dataset example which includes 3 replicates per condition)
 liver.mergeIntegr1 <- readRDS("liver.mergeIntegr1Meta.rds")
 LivPseu = liver.mergeIntegr1
@@ -1925,8 +1337,6 @@ pseudo_liv <- AggregateExpression(LivPseu, assays = "SCT", return.seurat = T,
                                   group.by = c("stim","group", "celltype") #specify a vector, such as c('ident', 'replicate', 'celltype')
 )
 
-
-
 # each 'cell' is a stim-repli-celltype pseudobulk profile
 tail(Cells(pseudo_liv))
 pseudo_liv$celltype.stim <- paste(pseudo_liv$celltype, pseudo_liv$stim, sep = "_")
@@ -1934,7 +1344,6 @@ table(pseudo_liv$celltype.stim)
 
 ###### save file
 saveRDS(pseudo_liv, file = "pseudo_liv.rds")
-
 ## Load the data
 pseudo_liv <- readRDS("pseudo_liv.rds")
 
@@ -1953,8 +1362,6 @@ head(bulk.H.de, n = 15)
 de_markers = bulk.H.de
 
 
-
-
 ##### Volcano Plot
 ### Hepatocytes1_treat vs Hepatocytes1_control
 #reset par
@@ -1970,17 +1377,7 @@ graph2tif(x = NULL, file='5_x-Volcano_HSCPsudo', font = "Arial", cairo = TRUE,
 
 
 
-#### GO enrichment analysis for tumor clusters 1 vs 0
-
-BiocManager::install("GEOquery")
-BiocManager::install("pathview")
-BiocManager::install("KEGG.db")
-BiocManager::install("enrichplot")
-BiocManager::install("clusterProfiler")
-BiocManager::install("AnnotationDbi")
-BiocManager::install("TxDb.Mmusculus.UCSC.mm10.knownGene")
-BiocManager::install("org.Mm.eg.db")
-
+# GO enrichment analysis for tumor clusters 1 vs 0
 library(GEOquery)
 library(dplyr)
 library(pathview)
@@ -1988,7 +1385,6 @@ library(enrichplot)
 library(clusterProfiler)
 library(org.Hs.eg.db)
 library(GO.db)
-
 library(GOstats)
 library ("org.Mm.eg.db")
 library(Ipaper)
@@ -2000,18 +1396,15 @@ keytypes(org.Mm.eg.db)
 ###Prapation dataset for enrichment analysis:log2FC >0.8 &padj < 0.1
 res_gvv= de_markers
 head(res_gvv)
-
 colnames(res_gvv)[2] <- "log2FoldChange"
 colnames(res_gvv)[5] <- "padj"
 head(res_gvv)
-
 summary(res_gvv, res_gvv$padj < 0.05 & res_gvv$log2FoldChange>0)
 
 
 ### cnetplot for GO log2FC >1&padj < 0.01
 ###Prapation dataset for enrichment analysis:log2FC >1&padj < 0.01
 summary(res_gvv, res_gvv$padj < 0.1 & res_gvv$log2FoldChange>0)
-
 res_gvvOrdered1 <- res_gvv[order(res_gvv$padj),]
 res_gvvSig1 <- subset(res_gvvOrdered1, padj < 0.1)
 res_gvvSig1
@@ -2030,7 +1423,6 @@ gene.df <- bitr(gene, fromType = "SYMBOL",
                 toType = "ENTREZID",
                 OrgDb = org.Mm.eg.db)
 gene.df
-
 ego_all <- enrichGO(gene = gene.df$ENTREZID,
                     OrgDb = org.Mm.eg.db,
                     keyType = "ENTREZID",
@@ -2038,9 +1430,6 @@ ego_all <- enrichGO(gene = gene.df$ENTREZID,
                     pvalueCutoff = 0.05,
                     qvalueCutoff = 0.05)
 
-
-head(ego_all)
-dim(ego_all)
 write.csv(ego_all,'GO_ALL_HSC_protc.csv')
 dev.off()
 
@@ -2048,14 +1437,9 @@ dotplot(ego_all, showCategory=15)+ggtitle("GO enrichment analysis")
 graph2tif(x = NULL, file='5_x_GO enrichment analysis_HepaPsudo.tif', font = "Arial", cairo = TRUE,   
           width = 8, height = 5.5, bg = "transparent")
 
-write_fig(dotplot1, "5_x_GO enrichment analysis_HepaPsudo.tif", show = FALSE, devices = "tif", width = 8,
-          height = 5.5)
 
-
-
-
-######## count how many cells in different cell types
-## extract meta data
+## 10. Quantification of cell type composition 
+# extract meta data
 liver.mergeIntegr1 <- readRDS("liver_merge_integration1_protc.rds")
 liver.merge1 = liver.mergeIntegr1
 head(liver.merge1@meta.data)
@@ -2082,7 +1466,6 @@ for (i in grp){
   
 }
 
-
 ##### Percentage accumulative figure
 a=read.csv("CellTypPerc_protc4fig.csv", header=TRUE)
 a
@@ -2100,41 +1483,27 @@ graph2tif(x = NULL, file='5_x-CellTypePercWithNum', font = "Arial", cairo = TRUE
 
 
 
-
-
-#################### cell-cell communication using ‘CellChat’ #############
-
+## 11. Cellular communication
+# using ‘CellChat’
 install.packages('NMF')
 devtools::install_github("jokergoo/circlize")
 devtools::install_github("jokergoo/ComplexHeatmap")
 install.packages("parallelly")
-
 devtools::install_github("jinworks/CellChat")
-
 ptm = Sys.time()
 library(CellChat)
 library(patchwork)
 options(stringsAsFactors = FALSE)
 library(Seurat)
 
-
-
 ###### Integration: In order to work with multiple slices (with integration)
 ### we provide the merge function.
 liver.merge <- merge(liver1SCT1, y= liver3SCT1, add.cell.ids = c("condition1a", "condition1b"), project = "STProtocol")
 levels(liver.merge)
 
-
-table(liver.merge$orig.ident)
-liver.merge@active.ident
-head(liver.merge[[]])
-tail(liver.merge[[]])
-
-
 # this function uses minimum of the median UMI (calculated using the raw UMI counts) of individual objects
 # to reverse the individual SCT regression model using minimum of median UMI as the sequencing depth covariate. 
 liver.merge=PrepSCTFindMarkers(liver.merge, assay = "SCT", verbose = TRUE)
-
 
 ########## integrate data from the two conditions (control and treatment)
 # When aligning two genome sequences together,
@@ -2148,20 +1517,16 @@ liver.mergeIntegr[["SCT"]]
 DefaultAssay(liver.mergeIntegr) <- "SCT"
 VariableFeatures(liver.mergeIntegr) <- c(VariableFeatures(liver1SCT1), 
                                          VariableFeatures(liver3SCT1))
-#VariableFeatures(liver.mergeIntegr) <- c(VariableFeatures(liver1SCT1), VariableFeatures(liver2SCT1))
-
 liver.mergeIntegr <- RunPCA(liver.mergeIntegr, npcs = 30, verbose = FALSE)
 
 # integration (HarmonyIntegration)
 liver.mergeIntegr <- IntegrateLayers(object = liver.mergeIntegr, method = HarmonyIntegration, orig.reduction = "pca",
                                      normalization.method = "SCT", new.reduction = "harmony", verbose = T)
-
 # we can now visualize and cluster the datasets.
 liver.mergeIntegr <- FindNeighbors(liver.mergeIntegr, reduction = "harmony", dims = 1:30)
 liver.mergeIntegr <- FindClusters(liver.mergeIntegr, verbose = FALSE, resolution = 0.8, cluster.name = "harmony_clusters") # 17 cluster
 liver.mergeIntegr <- RunUMAP(liver.mergeIntegr, reduction = "harmony",
                              dims = 1:30, reduction.name = "umap.harmony")
-
 
 # Visualization
 DimPlot(liver.mergeIntegr, reduction = "umap.harmony", label = TRUE, group.by = c("ident", "orig.ident"))
@@ -2179,18 +1544,13 @@ graph2svg(x = NULL, file='17_2-clusterMergeIntegr_SpatialDimPlot', font = "Arial
           width = 15, height = 6, bg = "transparent")
 
 
-
-
-### Annotation by GPT-4: the name is same as the merge before integration
+### Annotation: the name is same as the merge before integration
 # IMPORTANT! Assign your OpenAI API key. See Vignette for details
 Sys.setenv(OPENAI_API_KEY = 'xx')
-
 # Load packages
 library(GPTCelltype)
 library(openai)
-
 # Find Markers
-#liver.merge=PrepSCTFindMarkers(liver.merge, assay = "SCT", verbose = TRUE)
 all_markers = FindAllMarkers(liver.mergeIntegr, assay = "SCT")
 markers = all_markers
 
@@ -2199,25 +1559,12 @@ markers = all_markers
 res <- gptcelltype(markers, tissuename = 'liver', model = 'gpt-4')
 res
 write.csv(res, 'Celltype_Integ_v10.csv')
-#write.csv(res, 'AnnoInteg1.csv')
-
-# res=["Hepatocytes1", "Hepatocytes2", "Hepatocytes3", "Hepocyte/Stellate cells", "Hepatocytes4"]
-# 
-# res=c("Hepatocytes1", "Hepatocytes2", "Hepatocytes3", "Hepatic Stellate Cells1", "Kupffer Cells","Hepatocellular carcinoma cells1",
-#       "Hepatocytes4", "B Cells", "Hepatic Stellate Cells2", "Erythrocytes", "Myofibroblasts",
-#       "Hepatocellular carcinoma cells3", "Hepatocellular carcinoma cells4", "Erythrocytes", "Hepatocellular carcinoma cells5", "Hepatocellular carcinoma cells6",
-#       "Cholangiocytes", "Hepatocellular carcinoma cells2", "Hepatocytes6", "Hepatocytes7")
-
 celltype <- c("0: Hepatocytes1", "1: Hepatocytes2", "2: Cholangiocytes", "3: Hepatocytes3", "4: Hepatic Stellate Cells","5: Hepatocytes4",
               "6: Hepatocytes5", "7: Erythroblasts", "8: B Cells", "9: Hepatocytes6", "10: Kupffer Cells")
 
 liver.mergeIntegr1=liver.mergeIntegr
 names(celltype) <- levels(liver.mergeIntegr1)
 liver.mergeIntegr1 <- RenameIdents(liver.mergeIntegr1, celltype)
-
-# Assign cell type annotation back to Seurat object
-# liver.merge1=liver.merge
-# liver.merge1@meta.data$celltype <- as.factor(res[as.character(Idents(liver.merge1))])
 
 # Visualize cell type annotation on UMAP
 DimPlot(liver.mergeIntegr1)
@@ -2226,38 +1573,24 @@ graph2svg(x = NULL, file='18-Integrat_DimPlot_labeling', font = "Arial", cairo =
 
 head(liver.merge1[[]])
 
-
-
 ### save file
 saveRDS(liver.mergeIntegr1, file = "CellCommuniLiv1a3.rds")
-
 
 ## Load the data
 liver.mergeIntegr1 <- readRDS("CellCommuniLiv1a3.rds")
 #liver.mergeIntegr1 = seurat_object
 
-
 # Split two datasets from integrative file
-
-head(liver.mergeIntegr1@meta.data)
-Idents(liver.mergeIntegr1)
-levels(liver.mergeIntegr1)
-
 object= liver.mergeIntegr1
 table(object$orig.ident)
 Liv1 <- subset(object, orig.ident == 'condition1a')
-#Liv1 <- subset(object, orig.ident == 'Group1')
 table(Liv1$orig.ident)
-
 Liv2 <- subset(object, orig.ident == 'condition1b')
-#Liv2 <- subset(object, orig.ident == 'Group2')
 table(Liv1$orig.ident)
-
 
 ### add data
 seu1 = Liv1
 seu2 = Liv2
-
 
 # show the image and annotated spots
 color.use <- scPalette(nlevels(seu1)); names(color.use) <- levels(seu1)
@@ -2265,20 +1598,16 @@ p1 <- Seurat::SpatialDimPlot(seu1, label = F, label.size = 3, cols = color.use)
 color.use <- scPalette(nlevels(seu2)); names(color.use) <- levels(seu2)
 p2 <- Seurat::SpatialDimPlot(seu2, label = F, label.size = 3, cols = color.use) + NoLegend()
 p1 + p2
-
 graph2svg(x = NULL, file='10-9-ImageAnnoPlots', font = "Arial", cairo = TRUE,   
           width = 8, height = 5, bg = "transparent")
-
 
 # Prepare input data for CelChat analysis
 data.input1 = Seurat::GetAssayData(seu1, slot = "data", assay = "SCT") # normalized data matrix
 data.input2 = Seurat::GetAssayData(seu2, slot = "data", assay = "SCT") 
-
 genes.common <- intersect(rownames(data.input1), rownames(data.input2))
 colnames(data.input1) <- paste0("A1_", colnames(data.input1))
 colnames(data.input2) <- paste0("A2_", colnames(data.input2))
 data.input <- cbind(data.input1[genes.common, ], data.input2[genes.common, ])
-
 
 # define the meta data
 # a column named `samples` should be provided for spatial transcriptomics analysis,
@@ -2287,7 +1616,6 @@ data.input <- cbind(data.input1[genes.common, ], data.input2[genes.common, ])
 # users still need to create a CellChat object seperately for each condition.
 meta1 = data.frame(labels = Idents(seu1), samples = "A1") # manually create a dataframe consisting of the cell labels
 meta2 = data.frame(labels = Idents(seu2), samples = "A2") 
-
 meta <- rbind(meta1, meta2)
 rownames(meta) <- colnames(data.input)
 
@@ -2296,9 +1624,7 @@ meta$labels <- factor(meta$labels, levels = levels(Idents(seu1)))
 meta$samples <- factor(meta$samples, levels = c("A1", "A2"))
 unique(meta$labels) # check the cell labels
 #meta$labels = droplevels(meta$labels, exclude = setdiff(levels(meta$labels),unique(meta$labels)))
-
 unique(meta$samples) # check the sample labels
-
 
 # load spatial transcriptomics information
 # Spatial locations of spots from full (NOT high/low) resolution images are required. 
@@ -2308,40 +1634,31 @@ spatial.locs2 = Seurat::GetTissueCoordinates(seu2, scale = NULL, cols = c("image
 spatial.locs <- rbind(spatial.locs1, spatial.locs2)
 rownames(spatial.locs) <- colnames(data.input)
 
-
 # Scale factors of spatial coordinates
 # For 10X Visium, the conversion factor of converting spatial coordinates
 # from Pixels to Micrometers can be computed as the ratio of the theoretical spot size (i.e., 65um)
 # over the number of pixels that span the diameter of a theoretical spot size
 # in the full-resolution image (i.e., 'spot_diameter_fullres' in pixels in the 'scalefactors_json.json' file).
-scalefactors1 = jsonlite::fromJSON(txt = file.path("C:/Users/wddon/OneDrive/文档/BaiduSyncdisk/R analysis/Spatial transcriptomics/GDF15CR/Sam19/spatial", 'scalefactors_json.json'))
+scalefactors1 = jsonlite::fromJSON(txt = file.path("C:/Yourfolder/Sam19/spatial", 'scalefactors_json.json'))
 spot.size = 65 # the theoretical spot size (um) in 10X Visium
 conversion.factor1 = spot.size/scalefactors1$spot_diameter_fullres
 spatial.factors1 = data.frame(ratio = conversion.factor1, tol = spot.size/2)
-
-
-scalefactors2 = jsonlite::fromJSON(txt = file.path("C:/Users/wddon/OneDrive/文档/BaiduSyncdisk/R analysis/Spatial transcriptomics/GDF15CR/Sam18/spatial", 'scalefactors_json.json'))
+scalefactors2 = jsonlite::fromJSON(txt = file.path("C:/Yourfolder/Sam18/spatial", 'scalefactors_json.json'))
 conversion.factor2 = spot.size/scalefactors2$spot_diameter_fullres
 spatial.factors2 = data.frame(ratio = conversion.factor2, tol = spot.size/2)
-
 spatial.factors <- rbind(spatial.factors1, spatial.factors2)
 rownames(spatial.factors) <- c("A1", "A2")
-
 
 #### Create a CellChat object
 head(spatial.locs)
 spatial.locs=spatial.locs[,-3]
 cellchat <- createCellChat(object = data.input, meta = meta, group.by = "labels",
                            datatype = "spatial", coordinates = spatial.locs, spatial.factors = spatial.factors)
-
 cellchat
-
 
 #### Set the ligand-receptor interaction database
 CellChatDB <- CellChatDB.mouse # use CellChatDB.human if running on human data
-
 CellChatDB.use <- subsetDB(CellChatDB, search = "Secreted Signaling", key = "annotation") # use Secreted Signaling
-
 cellchat@DB <- CellChatDB.use
 
 
@@ -2349,29 +1666,20 @@ cellchat@DB <- CellChatDB.use
 # To infer the cell state-specific communications, we identify over-expressed ligands
 # or receptors in one cell group and then identify over-expressed
 # ligand-receptor interactions if either ligand or receptor is over-expressed.
-
 # subset the expression data of signaling genes for saving computation cost
 cellchat <- subsetData(cellchat) # This step is necessary even if using the whole database
 future::plan("multisession", workers = 4) 
 cellchat <- identifyOverExpressedGenes(cellchat)
 cellchat <- identifyOverExpressedInteractions(cellchat)
 
-#execution.time = Sys.time() - ptm
-#print(as.numeric(execution.time, units = "secs"))
-
-
 #### Part II: Inference of cell-cell communication network
 # Compute the communication probability and infer cellular communication network
-#ptm = Sys.time()
-
-
 #For certain functions, each worker needs access to certain global variables.
 #If these are larger than the default limit, you will see this error. 
 #To get around this, you can set options(future.globals.maxSize = X),where X is the maximum allowed size in bytes.
 #So to set it to 1GB, you would run options(future.globals.maxSize = 1000 * 1024^2). 
 #Note that this will increase your RAM usage so set this number mindfully.
 options(future.globals.maxSize = 1050 * 1024^2)
-
 cellchat <- computeCommunProb(cellchat, type = "truncatedMean", trim = 0.1, 
                               distance.use = FALSE, interaction.range = 250, scale.distance = NULL,
                               contact.dependent = TRUE, contact.range = 100)
@@ -2388,19 +1696,14 @@ cellchat <- filterCommunication(cellchat, min.cells = 10)
 #and each signaling pathway is stored in the slot ‘net’ and ‘netP’, respectively.
 cellchat <- computeCommunProbPathway(cellchat)
 
-
 ##### Calculate the aggregated cell-cell communication network
 #We can calculate the aggregated cell-cell communication network by
 #counting the number of links or summarizing the communication probability.
 cellchat <- aggregateNet(cellchat)
 
-
 #We can also visualize the aggregated cell-cell communication network. 
 #For example, showing the number of interactions or the total interaction strength (weights)
 #between any two cell groups using circle plot or heatmap plot.
-
-#ptm = Sys.time()
-
 groupSize <- as.numeric(table(cellchat@idents))
 par(mfrow = c(1,2), xpd=TRUE)
 netVisual_circle(cellchat@net$count, vertex.weight = rowSums(cellchat@net$count),
@@ -2424,10 +1727,8 @@ graph2svg(x = NULL, file='10-12-CCCHeatmap', font = "Arial", cairo = TRUE,
 #Upon infering the cell-cell communication network, CellChat provides various functionality
 #for further data exploration, analysis, and visualization. 
 #Here we only showcase the circle plot and the new spatial plot.
-
 #All the signaling pathways showing significant communications can be accessed by following
 cellchat@netP$pathways
-
 pathways.show <- c("MIF") 
 
 # Circle plot
@@ -2454,8 +1755,6 @@ netVisual_aggregate(cellchat, signaling = pathways.show, sample.use = "A2",
 graph2svg(x = NULL, file='10-15-CCCMacrophagePathwaySpat_liv3', font = "Arial", cairo = TRUE,   
           width = 5, height = 5, bg = "transparent")
 
-
-
 #### Compute and visualize the network centrality scores:
 # Compute the network centrality scores
 # the slot 'netP' means the inferred intercellular communication network of signaling pathways
@@ -2469,17 +1768,13 @@ netAnalysis_signalingRole_network(cellchat, signaling = pathways.show, width = 8
 graph2svg(x = NULL, file='10-16-CCCcentrality', font = "Arial", cairo = TRUE,   
           width = 4.5, height = 4, bg = "transparent")
 
-
 # USER can show this information on the spatial transcriptomics when
 # visualizing a signaling network, e.g., bigger circle indicates larger incoming signaling
 par(mfrow=c(1,1))
 netVisual_aggregate(cellchat, signaling = pathways.show, sample.use = "A1", layout = "spatial",
                     edge.width.max = 2, alpha.image = 0.2, vertex.weight = "incoming", vertex.size.max = 6, vertex.label.cex = 0)
-
 graph2svg(x = NULL, file='10-17-CCCDSignalSpa_liv1', font = "Arial", cairo = TRUE,   
           width = 4.5, height = 4, bg = "transparent")
-
-
 
 #### Compute the contribution of each ligand-receptor pair to the overall signaling pathway
 netAnalysis_contribution(cellchat, signaling = pathways.show)
@@ -2489,23 +1784,11 @@ graph2svg(x = NULL, file='10-18-CCClig-rec pairContri', font = "Arial", cairo = 
 
 ## When visualizing gene expression distribution on tissue using spatialFeaturePlot,
 ## users also need to provide the sample.use as an input.
-
 # Take an input of a few genes
 spatialFeaturePlot(cellchat, features = c("Cd74","Cd44"),
                    sample.use = "A1", point.size = 0.8, color.heatmap = "Reds", direction = 1)
 graph2svg(x = NULL, file='10-19-CCClig-recGeneExpSpa', font = "Arial", cairo = TRUE,   
           width = 6, height = 4, bg = "transparent")
-
-
-# Take an input of a ligand-receptor pair (not working)
-spatialFeaturePlot(cellchat, pairLR.use = "Mif-(Cd74+Cd44)", sample.use = "A1",
-                   point.size = 0.5, do.binary = FALSE, cutoff = 0.05, enriched.only = F, color.heatmap = "Reds", direction = 1)
-
-
-# Take an input of a ligand-receptor pair and show expression in binary (not working)
-spatialFeaturePlot(cellchat, pairLR.use = "AREG_EGFR", sample.use = "A1",
-                   point.size = 1.5, do.binary = TRUE, cutoff = 0.05, enriched.only = F, color.heatmap = "Reds", direction = 1)
-
 
 #### Part V: Save the CellChat object
 saveRDS(cellchat, file = "cellchat_mouse_Liv1a3_PF.rds")
@@ -2513,32 +1796,17 @@ saveRDS(cellchat, file = "cellchat_mouse_Liv1a3_PF.rds")
 
 
 
-
-
-#################### Metabolic analysis #########################
+## 12. Metabolic activity analysis
 ## This part includes following:
-# 1. Metabolic pathway activity
-# 2. Metabolic interactions
-# 3. Metabolites analysis_Flux balance analysis (FBA)
+# a. Metabolic pathway activity
+# b. Metabolic interactions
+# c. Metabolites analysis_Flux balance analysis (FBA)
 
 
 
-########### Compare metabolic activities between ctl vs treatment ###########
-## We test activitis using 85 metabolism pathways gene sets
-#######-------------irGSEA---------------
-
-if (!require("devtools", quietly = TRUE)){
-  install.packages("devtools")
-}
-devtools::install_github("nicolerg/ssGSEA2")
-BiocManager::install("escape")
-BiocManager::install("dittoSeq")
-BiocManager::install("enrichIt")
-BiocManager::install("clusterProfiler")
-BiocManager::install("org.Mm.eg.db")
-BiocManager::install("org.Dm.eg.db")
-BiocManager::install("biomaRt")
-
+# a. Metabolic pathway activity -- Compare metabolic activities between condition1 vs condition2
+# We test activitis using 85 metabolism pathways gene sets
+# using irGSEA
 library(GSVA)
 library(msigdbr)
 library(escape)
@@ -2557,22 +1825,17 @@ library(dplyr)
 library(Seurat)
 library(irGSEA)
 
-
 ### load data of Metabolic pathways
-# liver.mergeIntegr1 <- readRDS("liver.mergeIntegr1Meta.rds")
-# irGsealiv = liver.mergeIntegr1
 irGsealiv <- readRDS("irGsealiv_protc.rds")
 
 # generate stim-celltype metadata
 head(irGsealiv@meta.data)
 table(irGsealiv$group)
-
 irGsealiv$celltype.stim <- paste(irGsealiv$celltype, irGsealiv$stim, sep = "_")
 table(irGsealiv$celltype.stim)
 
 ###### save file
 saveRDS(irGsealiv, file = "irGsealiv_protc1.rds")
-
 
 # Load genesets
 MetaPW = read.gmt("MetabolicPathway.gmt")
@@ -2599,27 +1862,13 @@ saveRDS(irGsea_livfinal, file = "irGsealivFinal_protc.rds")
 ## Load data set
 irGsea_livfinal <- readRDS("irGsealivFinal_protc.rds")
 
-irGsea_livfinal
-Seurat::Assays(irGsea_livfinal)
-rownames(irGsea_livfinal@assays$UCell@data)
-head (irGsea_livfinal@meta.data)
-table(irGsea_livfinal@meta.data$celltype.stim)
-table(irGsea_livfinal@meta.data$celltype)
-table(irGsea_livfinal$group)
-irGsea_livfinal@images
-
-
-## Extract the cell type we interested
-# sub_obj <- subset(irGsea_livfinal, subset = celltype %in% c("Hepatocytes1", "Hepatocytes2", "Hepatocytes3", "HSCs", "Macrophages"))
-sub_obj = irGsea_livfinal
-
 ## compare metabolic activity in different cell types
+sub_obj = irGsea_livfinal
 result.dge <- irGSEA.integrate(object = sub_obj, 
                                group.by = "celltype",
                                metadata = NULL, col.name = NULL,
                                method = c("AUCell","UCell", "singscore", 
                                           "ssgsea", "JASMINE"))
-
 ## Plot figures
 # heatmap plot
 irGSEA.heatmap.plot <- irGSEA.heatmap(object = result.dge,
@@ -2638,8 +1887,6 @@ irGSEA.bubble.plot
 graph2tif(x = NULL, file='5_x-irGSEA_LivMeta_r1', font = "Arial", cairo = TRUE,   
           width = 8, height = 8, bg = "transparent")
 
-
-
 ## density heatmap
 #Show the expression and distribution of “FAO” in Ucell among clusters.
 densityheatmap <- irGSEA.densityheatmap(object = sub_obj,
@@ -2649,44 +1896,6 @@ densityheatmap <- irGSEA.densityheatmap(object = sub_obj,
 densityheatmap
 graph2tif(x = NULL, file='5_x-irGSEA_LivMetaDensity_r1', font = "Arial", cairo = TRUE,   
           width = 6, height = 5, bg = "transparent")
-
-
-# ## upset plot
-# # Show the intersections of significant gene sets among clusters in RRA
-# irGSEA.upset.plot <- irGSEA.upset(object = result.dge, 
-#                                   method = "RRA")
-# irGSEA.upset.plot
-# graph2tif(x = NULL, file='irGSEA_all_upsetPlot_MetGenrGrp3r1', font = "Arial", cairo = TRUE,   
-#           width = 6, height = 6, bg = "transparent")
-# 
-# 
-# ## Stacked bar plot
-# # Show the intersections of significant gene sets among clusters in all methods
-# 
-# irGSEA.barplot.plot <- irGSEA.barplot(object = result.dge,
-#                                       method = c("AUCell","UCell", "singscore",
-#                                                  "ssgsea", "JASMINE", "RRA"))
-# irGSEA.barplot.plot
-# graph2tif(x = NULL, file='irGSEA_all_StackedBarPlot_MetGenrGrp4', font = "Arial", cairo = TRUE,   
-#           width = 10, height = 8, bg = "transparent")
-
-
-
-# local show
-# Show the expression and distribution of special gene sets in special gene set enrichment analysis method
-# density scatterplot
-# Show the expression and distribution of “Energy-metabolism” in Ucell on UMAP plot.
-# rownames(MergeLivIrGfinal1@reductions$umap.harmony)
-# head (MergeLivIrGfinal1$seurat_clusters)
-# 
-# scatterplot <- irGSEA.density.scatterplot(object = MergeLivIrGfinal1,
-#                                           method = "UCell",
-#                                           show.geneset = "Energy-metabolism",
-#                                           reduction = "umap.harmony")
-# scatterplot
-# graph2tif(x = NULL, file='irGSEA_all_scatterplot_MetGenrGrp5', font = "Arial", cairo = TRUE,
-#           width = 5, height = 5, bg = "transparent")
-
 
 ## half vlnplot
 # Show the expression and distribution of “TCA-Cycle” in Ucell among clusters.
@@ -2698,87 +1907,12 @@ halfvlnplot
 graph2tif(x = NULL, file='5_x-irGSEA_LivMetahalfvln_r1', font = "Arial", cairo = TRUE,
           width = 6, height = 4, bg = "transparent")
 
-# ## Show the expression and distribution of “Energy-metabolism” between AUCell, UCell, singscore, ssgsea, JASMINE and viper among clusters.
-# vlnplot <- irGSEA.vlnplot(object = sub_obj,
-#                           method = c("AUCell", "UCell", "singscore", "ssgsea", "JASMINE"),
-#                           show.geneset = "TCA-Cycle")
-# vlnplot
-# 
-# 
-# ## ridge plot
-# # Show the expression and distribution of “HALLMARK-INFLAMMATORY-RESPONSE” in Ucell among clusters.
-# ridgeplot <- irGSEA.ridgeplot(object = sub_obj,
-#                               method = "UCell",
-#                               group.by = "stim",
-#                               show.geneset = "TCA-Cycle")
-# 
-# ridgeplot
-# graph2tif(x = NULL, file='irGSEA_all_ridgeplot_MetGenrGrp7r1', font = "Arial", cairo = TRUE,   
-#           width = 15, height = 7, bg = "transparent")
-
-
-# ## density heatmap
-# #Show the expression and distribution of “DNL” in Ucell among clusters.
-# densityheatmap <- irGSEA.densityheatmap(object = sub_obj,
-#                                         method = "UCell",
-#                                         group.by = "celltype.stim",
-#                                         show.geneset = "DNL")
-# densityheatmap
-# graph2tif(x = NULL, file='5_3-irGSEA_LivMeta_r1', font = "Arial", cairo = TRUE,   
-#           width = 6, height = 5, bg = "transparent")
-
-
-
-
-# ## half vlnplot
-# # Show the expression and distribution of “OXPHOS” in Ucell among clusters.
-# head (sub_obj$celltype.stim)
-# halfvlnplot <- irGSEA.halfvlnplot(object = sub_obj,
-#                                   method = "AUCell", group.by = "celltype.stim",
-#                                   show.geneset = "OXPHOS")
-# halfvlnplot
-# graph2tif(x = NULL, file='5_4-irGSEA_LivMeta_r1', font = "Arial", cairo = TRUE,
-#           width = 6, height = 4, bg = "transparent")
-
-
-
-
-
 
 
 
 ####### Assess activity of predefined Metabolic pathways (GSEA + cnetplot)
 # Load data set
 irGsealiv <- readRDS("irGsealiv_protc1.rds")
-
-# # generate stim-celltype metadata
-# head(irGsealiv@meta.data)
-# table(irGsealiv$group)
-# irGsealiv$group[irGsealiv$group == "treat2"] <- "condition2a"
-# irGsealiv$group[irGsealiv$group == "treat3"] <- "condition2c"
-# 
-# names(irGsealiv@images)
-# irGsealiv@images[["condition1a"]] <- irGsea_livfinal@images[["control1"]]
-# irGsealiv@images[["control1"]] <- NULL
-# irGsealiv@images[["condition1b"]] <- irGsea_livfinal@images[["control2"]]
-# irGsealiv@images[["control2"]] <- NULL
-# irGsealiv@images[["condition1c"]] <- irGsea_livfinal@images[["control3"]]
-# irGsealiv@images[["control3"]] <- NULL
-# 
-# irGsealiv@images[["condition2a"]] <- irGsea_livfinal@images[["treat1"]]
-# irGsealiv@images[["treat1"]] <- NULL
-# irGsealiv@images[["condition2b"]] <- irGsea_livfinal@images[["treat2"]]
-# irGsealiv@images[["treat2"]] <- NULL
-# irGsealiv@images[["condition2c"]] <- irGsea_livfinal@images[["treat3"]]
-# irGsealiv@images[["treat3"]] <- NULL
-
-
-###### save file
-saveRDS(irGsealiv, file = "irGsealiv_protc1.rds")
-
-## Load data set
-irGsealiv <- readRDS("irGsealiv_protc1.rds")
-
 
 ### Find the DE btw conditions in the same cell types
 library(DESeq2)
@@ -2825,28 +1959,10 @@ cnetplot(egmt, categorySize="pvalue", foldChange=genelist, showCategory = 10)
 graph2tif(x = NULL, file='5_x_GSEA_MetaActivityCnetPlot_3r1', font = "Arial", cairo = TRUE,   
           width = 6.5, height = 5, bg = "transparent")
 
-# # Ridgeplot
-# ridgeplot(egmt, showCategory = 10) + labs(x = "enrichment distribution")
-# graph2tif(x = NULL, file='GSEA_MetaActivityRidgep_4r1', font = "Arial", cairo = TRUE,   
-#           width = 7, height = 8, bg = "transparent")
-# 
-# # GseaPlot
-# gseaplot2(egmt, geneSetID = "Arginine biosynthesis", pvalue_table = T)
-# graph2tif(x = NULL, file='GSEAdet_Arginine biosynthesis_1r1', font = "Arial", cairo = TRUE,   
-#           width = 7, height = 4, bg = "transparent")
-# 
-# # DotPlot
-# dotplot(egmt, showCategory=10, split=".sign") + facet_grid(.~.sign)
-# graph2tif(x = NULL, file='GSEA_MetaActivityDotPlot_2r1', font = "Arial", cairo = TRUE,   
-#           width = 7, height = 6.5, bg = "transparent")
 
-
-
-
-
-
-# ------------------------------
-######## ssGSEA analysis and pathway interaction (correlation) analysis #######
+## 12. Metabolic activity analysis
+##     b. Metabolic interactions
+# ssGSEA analysis and pathway interaction (correlation) analysis #######
 
 # Load genesets
 MetaPW = read.gmt("MetabolicPathway.gmt")
@@ -2858,34 +1974,28 @@ MetaPW_list <- split(MetaPW$gene, MetaPW$term)
 str(MetaPW_list)
 head(MetaPW_list)
 
-
 ## Load data set
 irGsealiv <- readRDS("irGsealiv_protc1.rds")
-
 seurat_obj=irGsealiv
 
 ## setting analysis
 table(seurat_obj$group)
 DefaultAssay(seurat_obj) <- "SCT"
 
-
 # extract data frame
 expr <- as.matrix(GetAssayData(seurat_obj, slot = "data", assay = "SCT"))
 head(expr)
-
 
 # define metabolic genesets
 head(MetaPW)
 head(MetaPW_list)
 gene_sets <- MetaPW_list
 
-
 # ssGSEA
 library(GSVA)
 library(limma)
 scores <- gsva(ssgseaParam(expr, gene_sets), verbose=T)  # results are: gene_set × cell/spot
 head(scores)
-
 
 # reverse and add them to meta.data
 scr_ssgsea <- t(scores)
@@ -2903,17 +2013,12 @@ write.csv(cor_matrix, 'CorrSsgsea_Protc.csv')
 Pval <- cor.mtest(scr_ssgsea)
 write.csv(Pval, 'CorrSsgsea_Pval_Protc.csv')
 
-
 ### plot pathway correlation in ssGSEA analysis
 dittoScatterHex(seurat_object, x.var = "Glycolysis / Gluconeogenesis",
                 y.var = "Citrate cycle (TCA cycle)", color.var = "celltype",
                 colors = c(1:30), max.density = 1.5)
-
 graph2tif(x = NULL, file='5_x_Cor_celltype_r1', font = "Arial", cairo = TRUE,   
           width = 7, height = 6, bg = "transparent")
-
-
-
 
 ### compare different stimulations in hepatocytes
 library(corrplot)
@@ -2924,15 +2029,12 @@ Idents(seurat_object)
 seurat_object_sub <- subset(seurat_object, subset = celltype %in% c("Hepatocytes1","Hepatocytes2",
                                                                     "Hepatocytes3", "Hepatocytes4", "Hepatocytes5",
                                                                     "Hepatocytes6", "Hepatocytes7","Hepatocytes8"))
-
-
 # run correlation analysis
 scr_ssgseaFrame1 <- FetchData(seurat_object_sub, vars = c("Fatty acid oxidation", "Citrate cycle (TCA cycle)", "stim"))
 head(scr_ssgseaFrame1)
 tail(scr_ssgseaFrame1)
 scr_ssgseaFrame1$group <- sub("_.*", "", rownames(scr_ssgseaFrame1))
 head(scr_ssgseaFrame1)
-
 library(ggplot2)
 ggplot(scr_ssgseaFrame1, aes(x = scr_ssgseaFrame1$`Fatty acid oxidation`, y = scr_ssgseaFrame1$`Citrate cycle (TCA cycle)`, color = stim)) +
   geom_point(size = 1) +
@@ -2947,25 +2049,11 @@ graph2tif(x = NULL, file='5_x-ssGSEA_LivMeta_conditions', font = "Arial", cairo 
 
 
 
-
-
-#################### cell-cell communication using ‘CellChat’ #############
-
-install.packages('NMF')
-devtools::install_github("jokergoo/circlize")
-devtools::install_github("jokergoo/ComplexHeatmap")
-install.packages("parallelly")
-
-devtools::install_github("jinworks/CellChat")
-
-
-ptm = Sys.time()
+# cell-cell communication using ‘CellChat’
 library(CellChat)
 library(patchwork)
 options(stringsAsFactors = FALSE)
 library(Seurat)
-
-
 
 ###### Integration: In order to work with multiple slices (with integration)
 ### we provide the merge function.
@@ -2974,19 +2062,9 @@ liver2SCT1 <- readRDS("liver2_final.rds")
 liver.merge <- merge(liver1SCT1, y= liver2SCT1, add.cell.ids = c("control1", "treat1"), project = "CCCmeta")
 levels(liver.merge)
 
-# liver.merge <- merge(liver1SCT1, y=liver2SCT1, add.cell.ids = c("PairFed1", "GDF15_1"), project = "PairFedGDF15")
-# levels(liver.merge)
-
-table(liver.merge$orig.ident)
-liver.merge@active.ident
-head(liver.merge[[]])
-tail(liver.merge[[]])
-
-
 # this function uses minimum of the median UMI (calculated using the raw UMI counts) of individual objects
 # to reverse the individual SCT regression model using minimum of median UMI as the sequencing depth covariate.
 liver.merge=PrepSCTFindMarkers(liver.merge, assay = "SCT", verbose = TRUE)
-
 
 ########## integrate data from the two conditions (control and treatment)
 # When aligning two genome sequences together,
@@ -3000,8 +2078,6 @@ liver.mergeIntegr[["SCT"]]
 DefaultAssay(liver.mergeIntegr) <- "SCT"
 VariableFeatures(liver.mergeIntegr) <- c(VariableFeatures(liver1SCT1),
                                          VariableFeatures(liver2SCT1))
-#VariableFeatures(liver.mergeIntegr) <- c(VariableFeatures(liver1SCT1), VariableFeatures(liver2SCT1))
-
 liver.mergeIntegr <- RunPCA(liver.mergeIntegr, npcs = 30, verbose = FALSE)
 
 # integration (HarmonyIntegration)
@@ -3013,7 +2089,6 @@ liver.mergeIntegr <- FindNeighbors(liver.mergeIntegr, reduction = "harmony", dim
 liver.mergeIntegr <- FindClusters(liver.mergeIntegr, verbose = FALSE, resolution = 0.8, cluster.name = "harmony_clusters") # 17 cluster
 liver.mergeIntegr <- RunUMAP(liver.mergeIntegr, reduction = "harmony",
                              dims = 1:30, reduction.name = "umap.harmony")
-
 
 # Visualization
 DimPlot(liver.mergeIntegr, reduction = "umap.harmony", label = TRUE, group.by = c("ident", "orig.ident"))
@@ -3031,12 +2106,9 @@ graph2svg(x = NULL, file='17_2-clusterMergeIntegr_SpatialDimPlotr1', font = "Ari
           width = 15, height = 6, bg = "transparent")
 
 
-
-
-### Annotation by GPT-4: the name is same as the merge before integration
+### Annotation: the name is same as the merge before integration
 # IMPORTANT! Assign your OpenAI API key. See Vignette for details
 Sys.setenv(OPENAI_API_KEY = 'xx')
-
 # Load packages
 library(GPTCelltype)
 library(openai)
@@ -3045,21 +2117,9 @@ library(openai)
 #liver.merge=PrepSCTFindMarkers(liver.merge, assay = "SCT", verbose = TRUE)
 all_markers = FindAllMarkers(liver.mergeIntegr, assay = "SCT")
 markers = all_markers
-
 # GPT-4 annotation
 res <- gptcelltype(markers, tissuename = 'liver', model = 'gpt-4')
-#res <- gptcelltype(markers, tissuename = 'liver', model = 'gpt-4')
 res
-write.csv(res, 'Celltype_IntegCCC_r1_v6.csv')
-#write.csv(res, 'AnnoInteg1.csv')
-
-# res=["Hepatocytes1", "Hepatocytes2", "Hepatocytes3", "Hepocyte/Stellate cells", "Hepatocytes4"]
-#
-# res=c("Hepatocytes1", "Hepatocytes2", "Hepatocytes3", "Hepatic Stellate Cells1", "Kupffer Cells","Hepatocellular carcinoma cells1",
-#       "Hepatocytes4", "B Cells", "Hepatic Stellate Cells2", "Erythrocytes", "Myofibroblasts",
-#       "Hepatocellular carcinoma cells3", "Hepatocellular carcinoma cells4", "Erythrocytes", "Hepatocellular carcinoma cells5", "Hepatocellular carcinoma cells6",
-#       "Cholangiocytes", "Hepatocellular carcinoma cells2", "Hepatocytes6", "Hepatocytes7")
-
 celltype <- c("Hepatocytes1", "Hepatocytes2", "Hepatocytes3", "Hepatocytes4", "Hepatocytes5","Hepatocytes6",
               "HSCs", "Macrophages", "Hepatocytes7", "Hepatocytes8", "B Cells", "Erythroid cells", "Immune Cells")
 
@@ -3070,7 +2130,6 @@ liver.mergeIntegr1 <- RenameIdents(liver.mergeIntegr1, celltype)
 # Assign cell type annotation back to Seurat object
 # liver.merge1=liver.merge
 # liver.merge1@meta.data$celltype <- as.factor(res[as.character(Idents(liver.merge1))])
-
 # Visualize cell type annotation on UMAP
 DimPlot(liver.mergeIntegr1)
 graph2svg(x = NULL, file='18-Integrat_DimPlot_labeling', font = "Arial", cairo = TRUE,
@@ -3078,36 +2137,26 @@ graph2svg(x = NULL, file='18-Integrat_DimPlot_labeling', font = "Arial", cairo =
 
 head(liver.merge1[[]])
 
-
-
 ### save file
 saveRDS(liver.mergeIntegr1, file = "CCCmeta.rds")
-
-
 ## Load the data
 liver.mergeIntegr1 <- readRDS("CCCmeta.rds")
 
-
-# Chnage name and Split two datasets from integrative file
+# Change name and Split two datasets from integrative file
 head(liver.mergeIntegr1@meta.data)
 Idents(liver.mergeIntegr1)
 levels(liver.mergeIntegr1)
-
 object= liver.mergeIntegr1
 table(object$orig.ident)
 Idents(object)
 object$celltype <- Idents(object)
 head(object@meta.data)
-
 object$orig.ident[object$orig.ident == "PairFed1"] <- "control1"
 object$orig.ident[object$orig.ident == "GDF15_1"] <- "treat1"
-
 object$stim = object$orig.ident
 object$stim[object$stim == "control1"] <- "control"
 object$stim[object$stim == "treat1"] <- "treat"
-
 head(object@meta.data)
-
 
 # split samples
 Liv1 <- subset(object, orig.ident == 'control1')
@@ -3116,11 +2165,9 @@ table(Liv1$orig.ident)
 Liv2 <- subset(object, orig.ident == 'treat1')
 table(Liv2$orig.ident)
 
-
 ### add data
 seu1 = Liv1
 seu2 = Liv2
-
 
 # show the image and annotated spots
 color.use <- scPalette(nlevels(seu1)); names(color.use) <- levels(seu1)
@@ -3128,7 +2175,6 @@ p1 <- Seurat::SpatialDimPlot(seu1, label = F, label.size = 3, cols = color.use)
 color.use <- scPalette(nlevels(seu2)); names(color.use) <- levels(seu2)
 p2 <- Seurat::SpatialDimPlot(seu2, label = F, label.size = 3, cols = color.use) + NoLegend()
 p1 + p2
-
 graph2svg(x = NULL, file='10-9-ImageAnnoPlotsr1', font = "Arial", cairo = TRUE,   
           width = 8, height = 5, bg = "transparent")
 
@@ -3136,7 +2182,6 @@ graph2svg(x = NULL, file='10-9-ImageAnnoPlotsr1', font = "Arial", cairo = TRUE,
 # Prepare input data for CellChat analysis
 data.input1 = Seurat::GetAssayData(seu1, layer = "data", assay = "SCT") # normalized data matrix
 data.input2 = Seurat::GetAssayData(seu2, layer = "data", assay = "SCT") 
-
 genes.common <- intersect(rownames(data.input1), rownames(data.input2))
 colnames(data.input1) <- paste0("A1_", colnames(data.input1))
 colnames(data.input2) <- paste0("A2_", colnames(data.input2))
@@ -3150,7 +2195,6 @@ data.input <- cbind(data.input1[genes.common, ], data.input2[genes.common, ])
 # users still need to create a CellChat object seperately for each condition.
 meta1 = data.frame(labels = Idents(seu1), samples = "A1") # manually create a dataframe consisting of the cell labels
 meta2 = data.frame(labels = Idents(seu2), samples = "A2") 
-
 meta <- rbind(meta1, meta2)
 rownames(meta) <- colnames(data.input)
 
@@ -3159,9 +2203,7 @@ meta$labels <- factor(meta$labels, levels = levels(Idents(seu1)))
 meta$samples <- factor(meta$samples, levels = c("A1", "A2"))
 unique(meta$labels) # check the cell labels
 #meta$labels = droplevels(meta$labels, exclude = setdiff(levels(meta$labels),unique(meta$labels)))
-
 unique(meta$samples) # check the sample labels
-
 
 # load spatial transcriptomics information
 # Spatial locations of spots from full (NOT high/low) resolution images are required. 
@@ -3181,40 +2223,25 @@ dim(data.input)
 # from Pixels to Micrometers can be computed as the ratio of the theoretical spot size (i.e., 65um)
 # over the number of pixels that span the diameter of a theoretical spot size
 # in the full-resolution image (i.e., 'spot_diameter_fullres' in pixels in the 'scalefactors_json.json' file).
-scalefactors1 = jsonlite::fromJSON(txt = file.path("C:/Users/wddon/OneDrive/文档/BaiduSyncdisk/R analysis/Spatial transcriptomics/GDF15CR/Sam19/spatial", 'scalefactors_json.json'))
+scalefactors1 = jsonlite::fromJSON(txt = file.path("C:/YourFolder/Sam19/spatial", 'scalefactors_json.json'))
 spot.size = 65 # the theoretical spot size (um) in 10X Visium
 conversion.factor1 = spot.size/scalefactors1$spot_diameter_fullres
 spatial.factors1 = data.frame(ratio = conversion.factor1, tol = spot.size/2)
-
-
-scalefactors2 = jsonlite::fromJSON(txt = file.path("C:/Users/wddon/OneDrive/文档/BaiduSyncdisk/R analysis/Spatial transcriptomics/GDF15CR/Sam10/spatial", 'scalefactors_json.json'))
+scalefactors2 = jsonlite::fromJSON(txt = file.path("C:/YourFolder/Sam10/spatial", 'scalefactors_json.json'))
 conversion.factor2 = spot.size/scalefactors2$spot_diameter_fullres
 spatial.factors2 = data.frame(ratio = conversion.factor2, tol = spot.size/2)
-
 spatial.factors <- rbind(spatial.factors1, spatial.factors2)
 rownames(spatial.factors) <- c("A1", "A2")
-
 
 #### Create a CellChat object
 head(spatial.locs)
 spatial.locs=spatial.locs[,-3]
 cellchat <- createCellChat(object = data.input, meta = meta, group.by = "labels",
                            datatype = "spatial", coordinates = spatial.locs, spatial.factors = spatial.factors)
-
 cellchat
-
 
 #### Set the ligand-receptor interaction database
 # Use the CellChatDB with metabolic signaling
-
-##$$$$ for all pathways
-CellChatDB <- CellChatDB.mouse # use CellChatDB.human if running on human data
-CellChatDB.use <- subsetDB(CellChatDB, search = "Secreted Signaling", key = "annotation") # use Secreted Signaling
-cellchat@DB <- CellChatDB.use
-unique(CellChatDB.use$interaction$annotation)
-unique(CellChatDB.use$interaction$pathway_name)
-unique(CellChatDB.use$interaction$pathway_name)
-
 
 # $$$$ only for metabolic signaling
 # get pathways related glucose metabolism
@@ -3260,15 +2287,8 @@ future::plan("multisession", workers = 4)
 cellchat <- identifyOverExpressedGenes(cellchat)
 cellchat <- identifyOverExpressedInteractions(cellchat)
 
-#execution.time = Sys.time() - ptm
-#print(as.numeric(execution.time, units = "secs"))
-
-
 #### Part II: Inference of cell-cell communication network
 # Compute the communication probability and infer cellular communication network
-#ptm = Sys.time()
-
-
 #For certain functions, each worker needs access to certain global variables.
 #If these are larger than the default limit, you will see this error. 
 #To get around this, you can set options(future.globals.maxSize = X),where X is the maximum allowed size in bytes.
@@ -3276,7 +2296,6 @@ cellchat <- identifyOverExpressedInteractions(cellchat)
 #Note that this will increase your RAM usage so set this number mindfully.
 options(future.globals.maxSize = 1050 * 1024^2)
 cellchat@images$coordinates <- as.matrix(cellchat@images$coordinates)
-
 cellchat <- computeCommunProb(cellchat, type = "truncatedMean", trim = 0.1, 
                               distance.use = FALSE, interaction.range = 250, scale.distance = NULL,
                               contact.dependent = TRUE, contact.range = 100)
@@ -3288,7 +2307,6 @@ cellchat <- filterCommunication(cellchat, min.cells = 10)
 ## Infer the cell-cell communication at a signaling pathway level
 #CellChat computes the communication probability on signaling pathway level by summarizing the communication
 #probabilities of all ligands-receptors interactions associated with each signaling pathway.
-
 #NB: The inferred intercellular communication network of each ligand-receptor pair
 #and each signaling pathway is stored in the slot ‘net’ and ‘netP’, respectively.
 cellchat <- computeCommunProbPathway(cellchat)
@@ -3299,13 +2317,9 @@ cellchat <- computeCommunProbPathway(cellchat)
 #counting the number of links or summarizing the communication probability.
 cellchat <- aggregateNet(cellchat)
 
-
 #We can also visualize the aggregated cell-cell communication network. 
 #For example, showing the number of interactions or the total interaction strength (weights)
 #between any two cell groups using circle plot or heatmap plot.
-
-#ptm = Sys.time()
-
 groupSize <- as.numeric(table(cellchat@idents))
 par(mfrow = c(1,1), xpd=TRUE)
 netVisual_circle(cellchat@net$count, vertex.weight = rowSums(cellchat@net$count),
@@ -3342,7 +2356,6 @@ netVisual_aggregate(cellchat, signaling = pathways.show, layout = "circle")
 graph2tif(x = NULL, file='10-13-CCCIGF_r1', font = "Arial", cairo = TRUE,   
           width = 4, height = 4, bg = "transparent")
 
-
 # Spatial plot
 #for Liv1
 par(mfrow=c(1,1))
@@ -3360,8 +2373,6 @@ netVisual_aggregate(cellchat, signaling = pathways.show, sample.use = "A2",
 graph2svg(x = NULL, file='10-15-CCCMacrophagePathwaySpat_liv3', font = "Arial", cairo = TRUE,   
           width = 5, height = 5, bg = "transparent")
 
-
-
 #### Compute and visualize the network centrality scores:
 # Compute the network centrality scores
 # the slot 'netP' means the inferred intercellular communication network of signaling pathways
@@ -3376,26 +2387,13 @@ graph2tif(x = NULL, file='10-16-CCCcentrality_r1', font = "Arial", cairo = TRUE,
           width = 4.5, height = 4, bg = "transparent")
 
 
-# # USER can show this information on the spatial transcriptomics when
-# # visualizing a signaling network, e.g., bigger circle indicates larger incoming signaling
-# par(mfrow=c(1,1))
-# netVisual_aggregate(cellchat, signaling = pathways.show, sample.use = "A1", layout = "spatial",
-#                     edge.width.max = 2, alpha.image = 0.2, vertex.weight = "incoming", vertex.size.max = 6, vertex.label.cex = 0)
-# 
-# graph2tif(x = NULL, file='10-17-CCCDSignalSpa_liv1_r1', font = "Arial", cairo = TRUE,   
-#           width = 4.5, height = 4, bg = "transparent")
-
-
-
 #### Compute the contribution of each ligand-receptor pair to the overall signaling pathway
 netAnalysis_contribution(cellchat, signaling = pathways.show)
 graph2tif(x = NULL, file='10-18-CCClig-rec pairContri_r1', font = "Arial", cairo = TRUE,   
           width = 4.5, height = 2.5, bg = "transparent")
 
-
 ## When visualizing gene expression distribution on tissue using spatialFeaturePlot,
 ## users also need to provide the sample.use as an input.
-
 # Take an input of a few genes
 spatialFeaturePlot(cellchat, features = c("Itgav","Itgb3"),
                    sample.use = "A1", point.size = 0.8, color.heatmap = "Reds", direction = 1)
@@ -3407,17 +2405,6 @@ spatialFeaturePlot(cellchat, features = c("Itgav","Itgb3"),
 graph2tif(x = NULL, file='10-19-CCClig-recGeneExpSpa_s2_r1', font = "Arial", cairo = TRUE,   
           width = 6, height = 4, bg = "transparent")
 
-
-# # Take an input of a ligand-receptor pair (not working)
-# spatialFeaturePlot(cellchat, pairLR.use = "Mif-(Cd74+Cd44)", sample.use = "A1",
-#                    point.size = 0.5, do.binary = FALSE, cutoff = 0.05, enriched.only = F, color.heatmap = "Reds", direction = 1)
-# 
-# 
-# # Take an input of a ligand-receptor pair and show expression in binary (not working)
-# spatialFeaturePlot(cellchat, pairLR.use = "AREG_EGFR", sample.use = "A1",
-#                    point.size = 1.5, do.binary = TRUE, cutoff = 0.05, enriched.only = F, color.heatmap = "Reds", direction = 1)
-
-
 #### Part V: Save the CellChat object
 saveRDS(cellchat, file = "cellchat_mouse_Liv1a2_Met.rds")
 
@@ -3427,33 +2414,21 @@ saveRDS(cellchat, file = "cellchat_mouse_Liv1a2_Met.rds")
 
 
 
-
-
-######## Comparism between control and treat using lipid metabolism to do ###############
+# Comparism between control and treat using lipid metabolism
 ## Load the data
 liver.mergeIntegr1 <- readRDS("CCCmeta.rds")
 
-
 # Chnage name and Split two datasets from integrative file
-head(liver.mergeIntegr1@meta.data)
-Idents(liver.mergeIntegr1)
-levels(liver.mergeIntegr1)
-
 object= liver.mergeIntegr1
 table(object$orig.ident)
 Idents(object)
 object$celltype <- Idents(object)
 head(object@meta.data)
-
 object$orig.ident[object$orig.ident == "PairFed1"] <- "control1"
 object$orig.ident[object$orig.ident == "GDF15_1"] <- "treat1"
-
 object$stim = object$orig.ident
 object$stim[object$stim == "control1"] <- "control"
 object$stim[object$stim == "treat1"] <- "treat"
-
-head(object@meta.data)
-
 
 # split samples
 Liv1 <- subset(object, orig.ident == 'control1')
@@ -3478,7 +2453,6 @@ data.input2 = Seurat::GetAssayData(seu2, layer = "data", assay = "SCT")
 # users still need to create a CellChat object seperately for each condition.
 meta1 = data.frame(labels = Idents(seu1), samples = "control") # manually create a dataframe consisting of the cell labels
 meta2 = data.frame(labels = Idents(seu2), samples = "treat") 
-
 
 # a factor level should be defined for the `meta$labels` and `meta$samples`
 meta1$labels <- factor(meta1$labels, levels = levels(Idents(seu1)))
@@ -3508,13 +2482,12 @@ dim(data.input1)
 # from Pixels to Micrometers can be computed as the ratio of the theoretical spot size (i.e., 65um)
 # over the number of pixels that span the diameter of a theoretical spot size
 # in the full-resolution image (i.e., 'spot_diameter_fullres' in pixels in the 'scalefactors_json.json' file).
-scalefactors1 = jsonlite::fromJSON(txt = file.path("C:/Users/wddon/OneDrive/文档/BaiduSyncdisk/R analysis/Spatial transcriptomics/GDF15CR/Sam19/spatial", 'scalefactors_json.json'))
+scalefactors1 = jsonlite::fromJSON(txt = file.path("C:/YourFolder/Sam19/spatial", 'scalefactors_json.json'))
 spot.size = 65 # the theoretical spot size (um) in 10X Visium
 conversion.factor1 = spot.size/scalefactors1$spot_diameter_fullres
 spatial.factors1 = data.frame(ratio = conversion.factor1, tol = spot.size/2)
 
-
-scalefactors2 = jsonlite::fromJSON(txt = file.path("C:/Users/wddon/OneDrive/文档/BaiduSyncdisk/R analysis/Spatial transcriptomics/GDF15CR/Sam10/spatial", 'scalefactors_json.json'))
+scalefactors2 = jsonlite::fromJSON(txt = file.path("C:/YourFolder/Sam10/spatial", 'scalefactors_json.json'))
 conversion.factor2 = spot.size/scalefactors2$spot_diameter_fullres
 spatial.factors2 = data.frame(ratio = conversion.factor2, tol = spot.size/2)
 
@@ -3570,9 +2543,6 @@ cellchat2 <- identifyOverExpressedInteractions(cellchat2)
 
 #### Part II: Inference of cell-cell communication network
 # Compute the communication probability and infer cellular communication network
-#ptm = Sys.time()
-
-
 #For certain functions, each worker needs access to certain global variables.
 #If these are larger than the default limit, you will see this error. 
 #To get around this, you can set options(future.globals.maxSize = X),where X is the maximum allowed size in bytes.
@@ -3617,9 +2587,6 @@ cellchat2 <- netAnalysis_computeCentrality(cellchat2, slot.name = "netP")
 #We can also visualize the aggregated cell-cell communication network. 
 #For example, showing the number of interactions or the total interaction strength (weights)
 #between any two cell groups using circle plot or heatmap plot.
-#ptm = Sys.time()
-
-
 ### merge data
 object.list <- list(ctl = cellchat1, treat = cellchat2)
 cellchat <- mergeCellChat(object.list, add.names = names(object.list))
@@ -3786,2026 +2753,12 @@ graph2tif(x = NULL, file='4-12-LipidcomparismMeta_r1', font = "Arial", cairo = T
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-################### generate a border scRNA-seq reference ######################temp
-
-## download data from GEO
-# source 1: Guilliams Cell 2022. https://www.livercellatlas.org/download.php --'Liver Cell Atlas: Mouse NAFLD'
-# source 2: Su iScience 2021. https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE166504 --'GSE166504_cell_metadata.20220204.tsv.gz', 'GSE166504_cell_raw_counts.20220204.txt.gz'
-# source 3 (Not useful, no label data): Remmerie Immunity 2020. https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE156059 --'GSE156059_RAW.tar'
-
-# #### source 3
-# library(hdf5r)
-# # Open file
-# data_pos <- Read10X_h5("Ref_Rem/GSM4721499_cd45pos-wd-24w_filtered_feature_bc_matrix.h5")
-# seurat_pos <- CreateSeuratObject(counts = data_pos, project = "CD45pos")
-# # See structure
-# head(data_pos$`Antibody Capture`)
-# # Read the second sample
-# data_neg <- Read10X_h5("Ref_Rem/GSM4721503_cd45neg-wd-24w_filtered_feature_bc_matrix.h5")
-# head(data_neg$`Gene Expression`)
-# data_neg <- Read10X_h5("Ref_Rem/GSM4721503_cd45neg-wd-24w_filtered_feature_bc_matrix.h5")
-
-
-
-#### source 2
-library(Seurat)
-library(data.table)
-
-
-# Read metadata in a sub-folder
-R.utils::gunzip("Ref_Su/GSE166504_cell_metadata.20220204.tsv.gz", remove = FALSE)
-system.time({
-  meta <- fread("Ref_Su/GSE166504_cell_metadata.20220204.tsv.gz")
-})
-meta <- fread("Ref_Su/GSE166504_cell_metadata.20220204.tsv.gz", data.table = FALSE)
-
-table(meta$FileName)
-
-# only extract "30weeks" data from metadata
-meta_30wks <- meta[grepl("30weeks", meta$FileName), ]
-table(meta_30wks$CellType)
-meta_30wks$name <- paste(meta_30wks[[1]], meta_30wks[[3]], sep = "_")
-rownames(meta_30wks) <- meta_30wks$name
-meta_30wks <- meta_30wks[, -4]
-
-
-# Read count matrix 
-counts <- fread("Ref_Su/GSE166504_cell_raw_counts.20220204.txt.gz", data.table = FALSE)
-rownames(counts) <- counts[, 1]
-
-# only extract "30weeks" data:
-counts_30wks <- counts[, grep("_30weeks", colnames(counts))]
-counts_30wks <- counts_30wks[, -1]
-counts_30wks <- as.matrix(counts_30wks)
-
-
-
-# Sanity check: ensure order matches
-counts_30wks <- counts_30wks[, rownames(meta_30wks)]
-
-
-# Create Seurat object
-seurat_obj <- CreateSeuratObject(counts = counts_30wks, meta.data = meta_30wks)
-
-
-###### save file
-saveRDS(seurat_obj, file = "RefSu.rds")
-
-## Load the data
-seurat_obj <- readRDS("RefSu.rds")
-
-
-# Check cell types if present
-table(seurat_obj$CellType)
-
-# # Proceed with analysis
-# seurat_obj <- NormalizeData(seurat_obj)
-# seurat_obj <- FindVariableFeatures(seurat_obj)
-# seurat_obj <- ScaleData(seurat_obj)
-# seurat_obj <- RunPCA(seurat_obj)
-# seurat_obj <- RunUMAP(seurat_obj, dims = 1:30)
-# DimPlot(seurat_obj, group.by = "celltype")  # replace with correct column
-
-
-
-######## Combine the 2 scRNA-seq references together
-
-## Load the reference from source 1 Cell paper
-RefScott <- readRDS("RefMafld.rds")
-
-
-## Add Dataset Identity: This helps track the origin after merging.
-seurat1=seurat_obj
-seurat2=RefScott
-
-seurat1$dataset <- "Su2021"
-seurat2$dataset <- "Scott2022"
-
-
-# Check that they both have "celltype" in metadata
-table(seurat1$CellType)
-table(seurat2$annot)
-
-seurat1$celltype <- seurat1$CellType
-seurat1$CellType <- NULL
-
-seurat2$celltype <- seurat2$annot
-seurat2$annot <- NULL
-
-table(seurat1$celltype)
-table(seurat2$celltype)
-
-
-### Randomly choose 3000 cells per cell type for following analysis
-## seurat1
-# cell type info is in metadata
-meta <- seurat1@meta.data
-meta$cell_id <- rownames(meta)
-
-# get 3000 cells per cell type
-library(dplyr)
-sampled_cells <- meta %>%
-  group_by(celltype) %>%
-  group_modify(~ {
-    n_cells <- nrow(.x)
-    .x %>% slice_sample(n = min(3000, n_cells))
-  }) %>%
-  pull(cell_id)
-# downsize Seurat
-seurat1_sub <- subset(seurat1, cells = sampled_cells)
-table(seurat1_sub$celltype)
-
-## seurat2
-# cell type info is in metadata
-meta <- seurat2@meta.data
-meta$cell_id <- rownames(meta)
-# get 3000 cells per cell type
-library(dplyr)
-sampled_cells <- meta %>%
-  group_by(celltype) %>%
-  group_modify(~ {
-    n_cells <- nrow(.x)
-    .x %>% slice_sample(n = min(3000, n_cells))
-  }) %>%
-  pull(cell_id)
-
-# downsize Seurat
-seurat2_sub <- subset(seurat2, cells = sampled_cells)
-table(seurat2_sub$celltype)
-
-
-
-#replace geneNumber with gene names for seurat1
-head(rownames(seurat1_sub))
-library(biomaRt)
-
-# Connect to Ensembl
-mart <- useMart("ensembl", dataset = "mmusculus_gene_ensembl")
-
-# Extract raw counts and metadata
-counts <- GetAssayData(seurat1_sub, assay = "RNA", layer = "counts")
-meta <- seurat1_sub@meta.data
-library(biomaRt)
-
-mart <- useMart("ensembl", dataset = "mmusculus_gene_ensembl")
-gene_map <- getBM(
-  attributes = c("entrezgene_id", "external_gene_name"),
-  filters = "entrezgene_id",
-  values = rownames(counts),
-  mart = mart
-)
-# Remove duplicates and apply mapping
-gene_map <- gene_map[!duplicated(gene_map$entrezgene_id) & gene_map$external_gene_name != "", ]
-mapped_genes <- gene_map$external_gene_name[match(rownames(counts), gene_map$entrezgene_id)]
-
-# Keep only successfully mapped genes
-valid_rows <- !is.na(mapped_genes)
-counts <- counts[valid_rows, ]
-rownames(counts) <- mapped_genes[valid_rows]
-
-
-# Check duplicated row names
-sum(duplicated(rownames(counts)))  # Should return a number > 0
-# Remove duplicated gene names, keeping the first occurrence
-counts <- counts[!duplicated(rownames(counts)), ]
-# Re-create Seurat object
-seurat_fixed <- CreateSeuratObject(counts = counts, meta.data = meta)
-seurat_fixed <- SCTransform(seurat_fixed, verbose = TRUE)
-#seurat_fixed <- FindVariableFeatures(seurat_fixed, selection.method = "vst", nfeatures = 3000)
-seurat1_sub <- seurat_fixed
-table(seurat1_sub$celltype)
-
-
-
-
-## Integration (if batch effect or different protocols)
-# Normalize & HVG
-BiocManager::install('glmGamPoi')
-library(glmGamPoi)
-library(future)
-options(future.globals.maxSize = 6 * 1024^3) # Increase limit to 6GB
-gc() #clear memory
-#seurat1_sub <- SCTransform(seurat1_sub, verbose = T, return.only.var.genes = FALSE)
-seurat2_sub <- SCTransform(seurat2_sub, verbose = T, return.only.var.genes = FALSE)
-#seurat2_sub <- FindVariableFeatures(seurat_fixed, selection.method = "vst", nfeatures = 3000)
-table(seurat2_sub$celltype)
-
-# Map ENSEMBL IDs or Entrez IDs to gene symbols
-str(VariableFeatures(seurat1_sub)) #chr [1:3000] "2668" "17450", I need to replace these with gene names
-str(VariableFeatures(seurat2_sub)) #chr [1:3000] "S100a9" "S100a8" 
-
-
-# List objects
-objs <- list(seurat1_sub, seurat2_sub)
-
-features <- SelectIntegrationFeatures(object.list = objs, nfeatures = 2000)
-table(objs$celltype)
-
-
-# Step 3 (optional but recommended): Prepare for integration
-objs <- PrepSCTIntegration(object.list = objs, anchor.features = features)
-
-# save project
-saveRDS(objs, file = "RefLivbfcombi.rds")
-
-## Load the data
-objs <- readRDS("RefLivbfcombi.rds")
-
-# Integration anchors
-parallel::detectCores()
-library(future)
-plan("sequential")
-#options(future.globals.maxSize = 10 * 1024^3)  # setting as much as possible
-
-anchors <- FindIntegrationAnchors(object.list = objs, anchor.features = features, normalization.method = "SCT",dims = 1:30)
-
-# Integrate
-combined <- IntegrateData(anchorset = anchors, normalization.method = "SCT")
-
-# save project
-saveRDS(combined, file = "RefLivbfcombi1.rds")
-
-# Standard workflow
-combined <- ScaleData(combined)
-combined <- RunPCA(combined)
-combined <- RunUMAP(combined, dims = 1:30)
-
-### Save reference
-saveRDS(combined, file = "RefLivcombined.rds")
-
-## Load the data
-combined <- readRDS("RefLivcombined.rds")
-
-### Retain Original Cell Type Labels: Make sure celltype from both objects is kept.
-table(combined$celltype)  # should include all types
-DimPlot(combined, group.by = "celltype", label = TRUE)
-
-graph2svg(x = NULL, file='10-RefLiv_Mafld', font = "Arial", cairo = TRUE,   
-          width = 5.5, height = 4, bg = "transparent")
-
-
-table(combined$celltype)
-
-seurat_obj = combined
-seurat_obj$celltype <- recode(
-  seurat_obj$celltype,
-  "B" = "B cells",
-  "T" = "T cells",
-  "NK" = "NK cells",
-  "KCs" = "Kupffer cells",
-  "Mono/mono-derived cells" = "Monocyte/Monocyte derived macrophage"
-)
-
-table(seurat_obj$celltype)
-
-### Save reference
-saveRDS(seurat_obj, file = "RefLivcombined.rds")
-
-## Load the data
-combined <- readRDS("RefLivcombined.rds")
-
-### DimPlot
-DimPlot(seurat_obj, group.by = "celltype", label = TRUE)
-
-graph2tif(x = NULL, file='10_1-RefLiv_Mafld', font = "Arial", cairo = TRUE,   
-          width = 10, height = 5.5, bg = "transparent")
-
-
-
-
-
-# ### export reference
-# library(Seurat)
-# library(Matrix)
-# library(R.utils)  # for gzip compression
-# 
-# # Assume your Seurat object is named seurat_obj
-# output_dir <- "Reference/"
-# dir.create(output_dir, showWarnings = FALSE)
-# 
-# # Extract raw counts matrix
-# counts <- GetAssayData(seurat_obj, assay = "RNA", layer = "counts")
-# 
-# 
-# # 1. Export matrix.mtx.gz (sparse expression matrix)
-# writeMM(counts, file = file.path(output_dir, "matrix.mtx"))
-# gzip(file.path(output_dir, "matrix.mtx"), overwrite = TRUE)
-# 
-# # 2. Export barcodes.tsv.gz (cell barcodes)
-# barcodes <- colnames(counts)
-# write.table(barcodes,
-#             file = file.path(output_dir, "barcodes.tsv"),
-#             sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE)
-# gzip(file.path(output_dir, "barcodes.tsv"), overwrite = TRUE)
-# 
-# # 3. Export features.tsv.gz (gene list)
-# features <- data.frame(
-#   gene_id = rownames(counts),
-#   gene_name = rownames(counts),
-#   feature_type = rep("Gene Expression", nrow(counts))
-# )
-# write.table(features,
-#             file = file.path(output_dir, "features.tsv"),
-#             sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE)
-# gzip(file.path(output_dir, "features.tsv"), overwrite = TRUE)
-# 
-# # 4. Export cell metadata (e.g., cell types, sample ID)
-# metadata <- seurat_obj@meta.data
-# metadata$cell_id <- rownames(metadata)
-# write.csv(metadata, file = file.path(output_dir, "cell_metadata.csv"), row.names = FALSE)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-######### Make scRNA-seq reference #########
-# Sinlge-cell RNA-seq data download: (https://www.livercellatlas.org/download.php)--'Liver Cell Atlas: Mouse NAFLD' 
-library(Seurat)
-#data_dir = "C:/Users/wddon/Downloads/rawData_mouseNafld/rawData_mouseNafld/countTable_mouseNafld"
-
-mouseMafld = Read10X(data.dir="Ref_mouseNafld", gene.column = 1)
-#mouseMafld1 = Read10X(data.dir="Ref_mouseNafld_overlapABs", gene.column = 1)
-
-head(mouseMafld)
-
-s1 = CreateSeuratObject(counts = mouseMafld, min.cells=3, min.features = 200, project = "RefMafld")
-head(s1@meta.data)
-
-#s2 <- SCTransform(s1, ncells = 3000, variable.features.rv.th=1, verbose = TRUE)
-
-pancreas.ref=s1
-pancreas.ref <- NormalizeData(pancreas.ref)
-pancreas.ref <- FindVariableFeatures(pancreas.ref)
-pancreas.ref <- ScaleData(pancreas.ref)
-
-pancreas.ref <- RunPCA(pancreas.ref, npcs=15, verbose=TRUE)
-pancreas.ref <- FindNeighbors(pancreas.ref, dims = 1:15, verbose=TRUE)
-pancreas.ref <- FindClusters(pancreas.ref, verbose=TRUE)
-
-pancreas.ref <- RunUMAP(pancreas.ref, dims = 1:15, verbose=TRUE)
-# DimPlot(pancreas.ref, group.by = c("celltytpe", "tech"))
-DimPlot(pancreas.ref)
-
-
-# Make a new seurat
-a=read.csv("annot_mouseNafldAll.csv", header=TRUE)
-
-head(pancreas.ref@meta.data)
-#pancreas.ref@meta.data$CellTypes <- a$annot
-
-
-metaRe=pancreas.ref@meta.data
-head(metaRe)
-metaRe$cell = row.names(metaRe)
-
-a=read.csv("annot_mouseNafldAll.csv", header=TRUE)
-head(a)
-a1=a[,c(-1, -2, -3,-5,-7,-8,-9)]
-head(a1)
-
-metaRe1=merge(metaRe, a1, by="cell")
-head(metaRe1)
-
-rownames(metaRe1)=metaRe1$cell
-metaRe2=metaRe1[,-1]
-head(metaRe2)
-
-
-cout = pancreas.ref@assays$RNA$counts
-head(cout)
-dim(cout)
-cellId=a1$cell
-cout1=cout[,cellId]
-dim(cout1)
-
-RefLiv = CreateSeuratObject(counts=cout1, project = "RefLiv")
-RefLiv1=AddMetaData(RefLiv, metadata = metaRe2)
-
-##normalize UMAP
-pancreas.ref=RefLiv1
-pancreas.ref <- NormalizeData(pancreas.ref)
-pancreas.ref <- FindVariableFeatures(pancreas.ref)
-pancreas.ref <- ScaleData(pancreas.ref)
-
-pancreas.ref <- RunPCA(pancreas.ref, npcs=30, verbose=TRUE)
-pancreas.ref <- FindNeighbors(pancreas.ref, dims = 1:30, verbose=TRUE)
-pancreas.ref <- FindClusters(pancreas.ref, verbose=TRUE)
-
-pancreas.ref <- RunUMAP(pancreas.ref, dims = 1:30, verbose=TRUE)
-# DimPlot(pancreas.ref, group.by = c("celltytpe", "tech"))
-DimPlot(pancreas.ref, group.by = "annot", label = TRUE)
-graph2svg(x = NULL, file='10-RefLiv_Mafld', font = "Arial", cairo = TRUE,   
-          width = 5.5, height = 4, bg = "transparent")
-
-
-###### save file
-saveRDS(pancreas.ref, file = "RefMafld.rds")
-
-## Load the data
-pancreas.ref <- readRDS("RefMafld.rds")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#################### Metabolic analysis #########################
-## This part includes following:
-# 1. Big pathway analysis
-# 2. Detailed pathway analysis
-# 3. Metabolites analysis_Flux balance analysis (FBA)
-# 4. Interaction analysis
-# 5. Immune metabolic activity
-
-
-
-########### Compare metabolic activities between ctl vs treatment ###########
-## in this section, we will test KEGG contains 85 metabolism pathways and
-## REACTOME contains 82 metabolism pathways.
-## ssGSEA2.0/PTM-SEA
-if (!require("devtools", quietly = TRUE)){
-  install.packages("devtools")
-}
-devtools::install_github("nicolerg/ssGSEA2")
-BiocManager::install("escape")
-BiocManager::install("dittoSeq")
-BiocManager::install("enrichIt")
-BiocManager::install("clusterProfiler")
-BiocManager::install("org.Mm.eg.db")
-BiocManager::install("org.Dm.eg.db")
-BiocManager::install("biomaRt")
-
-library(GSVA)
-library(msigdbr)
-library(escape)
-library(GSEABase)
-library(dittoSeq)
-library(ggplot2)
-library(clusterProfiler)
-library(org.Mm.eg.db)
-library(GSEABase)
-library(org.Dm.eg.db)
-library(clusterProfiler)
-
-
-
-### Mouse KEGG Metabolism gene set preparation
-geneset = read.gmt("KEGG_metabolism_nc.gmt")
-head(geneset)
-class(geneset)
-geneset1 = geneset
-
-# Human and mouse gene exchange
-library(biomaRt)
-human <- useMart("ensembl", dataset = "hsapiens_gene_ensembl", host = "https://dec2021.archive.ensembl.org/")
-mouse <- useMart("ensembl", dataset = "mmusculus_gene_ensembl", host = "https://dec2021.archive.ensembl.org/")
-
-# Matching gene from mice and humans
-genes_human <- geneset1$gene
-head(genes_human)
-homologs <- getLDS(attributes = c("hgnc_symbol"),
-                   filters = "hgnc_symbol", values = genes_human,
-                   mart = human,
-                   attributesL = c("mgi_symbol"), martL = mouse, uniqueRows = T)
-
-head(homologs)
-colnames(homologs)[1] <- "gene"
-dim(geneset1)
-
-geneset1$MGI.symbol <- homologs$MGI.symbol[match(geneset1$gene, homologs$gene)]
-head(geneset1)
-geneset1 = geneset1[,-2]
-colnames(geneset1)[2] <- "gene"
-
-geneset1 = geneset1[1:2656,]
-
-# save KEGG Metabolism of mice
-write.table(geneset1, "KEGGMetabolisMM.txt", sep = "\t")
-
-
-
-
-## Mouse Metabolic Gene Set preparation (lipid, carbohydrate, amino acid metabolism, et al)
-# Mouse KEGG Metabolism gene set preparation
-geneset2 = geneset1
-head(geneset2)
-class(geneset2)
-geneset2[1:70,1]
-
-table(geneset2$term)
-
-geneset2$term <- gsub("Glycolysis / Gluconeogenesis", "Carbohydrate metabolism", geneset2$term)
-head(geneset2)
-table(geneset2$term)
-geneset2$term <- gsub("Pentose phosphate pathway", "Carbohydrate metabolism", geneset2$term)
-geneset2$term[1:289]="Carbohydrate metabolism"
-geneset2$term[290:337]="Glycan biosynthesis and metabolism"
-geneset2$term[338:537]="Carbohydrate metabolism"
-geneset2$term[538:696]="Energy metabolism"
-geneset2$term[697:1279]="Lipid metabolism"
-geneset2$term[1280:1554]="Nucleotide metabolism"
-geneset2$term[1555:2104]="Amino acid metabolism"
-geneset2$term[2105:2406]="Glycan biosynthesis and metabolism"
-geneset2$term[2407:2656]="Metabolism of cofactors and vitamins"
-
-geneset3 = geneset2[1:2656,]
-
-# save General pathway of KEGG Metabolism of mice
-write.table(geneset3, "KEGGMetabolisMMGeneral.txt", sep = "\t")
-
-
-# ## Metabolic Gene Set preparation (for future)
-# library(msigdbr)
-# all_gene_sets = msigdbr(species = "Mus musculus",
-#                         category='C2', subcollection="CP:KEGG_MEDICUS")
-# length(unique(table(all_gene_sets$gs_name)))
-# tail(table(all_gene_sets$gs_name))
-# 
-# gcSample = split(all_gene_sets$gene_symbol,
-#                  all_gene_sets$gs_name)
-# names(gcSample)
-# file="Homo-H-examp.txt"
-# gs=gcSample
-# write.gmt <- function(gs,file){
-#   sink(file)
-#   lapply(names(gs), function(i){
-#     cat( paste(c(i,'tmp',gs[[i]]),collapse='\t') )
-#     cat('\n')
-#   })
-#   sink()
-# }
-# write.gmt(gs,file)
-
-
-
-
-## Load the data
-liver.mergeIntegr1 <- readRDS("liver_merge_integration1.rds")
-head(liver.mergeIntegr1[[]])
-head(liver.mergeIntegr1@assays$SCT@data)
-
-##### Find the DE btw ctl and treatment in HSC
-
-DEanalysis=liver.mergeIntegr1
-head(DEanalysis@meta.data)
-tail(DEanalysis@meta.data)
-DEanalysis$celltype.stim <- paste(Idents(DEanalysis), DEanalysis$orig.ident, sep = "_")
-DEanalysis$celltype <- Idents(DEanalysis)
-Idents(DEanalysis) <- "celltype.stim"
-table(DEanalysis$celltype.stim)
-
-# demarkerHSC <- FindMarkers(DEanalysis, ident.1 = "6: HSC_GDF15_1", # compare diff treatments
-#                            ident.2 = "6: HSC_PairFed1", verbose = FALSE) 
-demarkerHSC <- FindMarkers(DEanalysis, ident.1 = "0: Hepatocytes1_GDF15_1", # compare diff cellTypes
-                           ident.2 = "2: Hepatocytes3_GDF15_1", verbose = FALSE) 
-
-head(demarkerHSC, n = 15)
-
-
-deg = demarkerHSC
-genelist = deg$avg_log2FC
-names(genelist)=rownames(deg)
-genelist=sort(genelist, decreasing = T)
-head(genelist)
-
-#------------------------------------
-# Assess General KEGG Metabolic pathways
-#geneset = read.gmt("KEGG_metabolism_nc.gmt")
-geneset = geneset3
-length(unique(geneset$term))
-egmt = GSEA(genelist, TERM2GENE=geneset,
-            minGSSize = 1,
-            pvalueCutoff = 1,
-            verbose = FALSE)
-head(egmt)
-egmt@result
-gsea_results_df = egmt@result
-rownames(gsea_results_df)
-write.csv(gsea_results_df, file="gsea_GrlKEGG_dfHepMac.csv")
-library(enrichplot)
-
-gseaplot2(egmt, geneSetID = "Lipid metabolism", pvalue_table = T)
-graph2tif(x = NULL, file='GSEAGrl_Lipid metabolism_1', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-gseaplot2(egmt, geneSetID = "Energy metabolism", pvalue_table = T)
-graph2tif(x = NULL, file='GSEAGrl_EE_2', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-gseaplot2(egmt, geneSetID = "Carbohydrate metabolism", pvalue_table = T)
-graph2tif(x = NULL, file='GSEAGrl_CHO_3', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-gseaplot2(egmt, geneSetID = "Amino acid metabolism", pvalue_table = T)
-graph2tif(x = NULL, file='GSEAGrl_AA metabolism_4', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-gseaplot2(egmt, geneSetID = "Nucleotide metabolism", pvalue_table = T)
-graph2tif(x = NULL, file='GSEAGrl_Nuc metabolism_5', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-gseaplot2(egmt, geneSetID = "Metabolism of cofactors and vitamins", pvalue_table = T)
-graph2tif(x = NULL, file='GSEAGrl_Vit metabolism_6', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-gseaplot2(egmt, geneSetID = "Glycan biosynthesis and metabolism", pvalue_table = T)
-graph2tif(x = NULL, file='GSEAGrl_Glycan metabolism_7', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-# DotPlot
-dotplot(egmt, showCategory=10, split=".sign") + facet_grid(.~.sign)
-graph2tif(x = NULL, file='GSEArl_DotPlot_8', font = "Arial", cairo = TRUE,   
-          width = 7, height = 3.5, bg = "transparent")
-
-#------------------------------------
-# Assess detailed KEGG Metabolic pathways
-geneset = geneset1
-length(unique(geneset$term))
-egmt = GSEA(genelist, TERM2GENE=geneset,
-            minGSSize = 1,
-            pvalueCutoff = 1,
-            verbose = FALSE)
-head(egmt)
-egmt@result
-gsea_results_df = egmt@result
-rownames(gsea_results_df)
-write.csv(gsea_results_df, file="gsea_DetailKEGG_dfHep3.csv")
-library(enrichplot)
-
-# GseaPlot
-gseaplot2(egmt, geneSetID = "Linoleic acid metabolism", pvalue_table = T)
-graph2tif(x = NULL, file='GSEAdet_Linoleic acid metabolism_1', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-gseaplot2(egmt, geneSetID = "Purine metabolism", pvalue_table = T)
-graph2tif(x = NULL, file='GSEAdet_Purine metabolism_2', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-gseaplot2(egmt, geneSetID = "Porphyrin and chlorophyll metabolism", pvalue_table = T)
-graph2tif(x = NULL, file='GSEAdet_PorphyrinMetabolism_3', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-
-# DotPlot
-dotplot(egmt, showCategory=10, split=".sign") + facet_grid(.~.sign)
-graph2tif(x = NULL, file='GSEA_MetaActivityDotPlot_2', font = "Arial", cairo = TRUE,   
-          width = 7, height = 8, bg = "transparent")
-
-# categorySize can be either 'pvalue' or 'geneNum'
-cnetplot(egmt, categorySize="pvalue", foldChange=genelist, showCategory = 8)
-graph2tif(x = NULL, file='GSEA_MetaActivityCnetPlot_3', font = "Arial", cairo = TRUE,   
-          width = 5, height = 5, bg = "transparent")
-
-# Ridgeplot
-ridgeplot(egmt) + labs(x = "enrichment distribution")
-graph2tif(x = NULL, file='GSEA_MetaActivityRidgep_4', font = "Arial", cairo = TRUE,   
-          width = 7, height = 11, bg = "transparent")
-
-
-
-
-
-
-
-
-#################### irGSEA ######################
-#######-------------irGSEA---------------
-# Install packages from Bioconductor
-bioconductor.packages <- c("AUCell", "BiocParallel", "ComplexHeatmap", 
-                           "decoupleR", "fgsea", "ggtree", "GSEABase", 
-                           "GSVA", "Nebulosa", "scde", "singscore",
-                           "SummarizedExperiment", "UCell",
-                           "viper","sparseMatrixStats")
-
-for (i in bioconductor.packages) {
-  if (!requireNamespace(i, quietly = TRUE)) {
-    BiocManager::install(i, ask = F, update = F)
-  }
-}
-
-# install packages from Github
-if (!requireNamespace("irGSEA", quietly = TRUE)) { 
-  devtools::install_github("chuiqin/irGSEA", force =T)
-}
-
-
-## 2. pre-processing workflow
-# Start from the 10X output file and organize it into the format required by the irGSEA package
-# load library
-BiocManager::install("msigdbr")
-install.packages("doMC", repos="http://R-Forge.R-project.org")
-devtools::install_github('immunogenomics/presto')
-
-library(presto)
-library(msigdbr)
-library(doMC)
-library(dplyr)
-library(Seurat)
-library(irGSEA)
-
-## Load data_single sample
-liver2SCT2 <- readRDS("liv2_SCT2.rds")
-DimPlot(liver2SCT2)
-Idents(liver2SCT2)
-
-## Load the data_multiple integrated sample
-liver.mergeIntegr1 <- readRDS("liver_merge_integration1.rds")
-head(liver.mergeIntegr1[[]])
-head(liver.mergeIntegr1@assays$SCT@data)
-Idents(liver.mergeIntegr1)
-
-MergeLivIrG=liver.mergeIntegr1
-head(MergeLivIrG@meta.data)
-tail(MergeLivIrG@meta.data)
-MergeLivIrG$celltype.stim <- paste(Idents(MergeLivIrG), MergeLivIrG$orig.ident, sep = "_")
-MergeLivIrG$celltype <- Idents(MergeLivIrG)
-Idents(MergeLivIrG) <- "celltype.stim"
-table(MergeLivIrG$celltype.stim)
-
-# head(MergeLivIrG@assays)
-# tail(MergeLivIrG@assays)
-# str(MergeLivIrG)
-# slotNames(MergeLivIrG)
-# 
-# head(MergeLivIrG@assays$SCT)
-# MergeLivIrG@images$PairFed1@image
-# head(MergeLivIrG@assays$SCT@scale.data)
-# head(MergeLivIrG@assays$Spatial$counts)
-
-
-## Calculate enrichment scores
-
-liver2SCT2@assays$SCT@counts
-liver2SCT2@assays$SCT@counts
-
-# single sample analysis
-liver2SCT2final <- irGSEA.score(object = liver2SCT2, assay = "SCT", 
-                             slot = "data", seeds = 123, ncores = 4,
-                             min.cells = 3, min.feature = 0,
-                             custom = F, geneset = NULL, msigdb = T, 
-                             species = "Mus musculus", category = "H",  
-                             subcategory = NULL, geneid = "symbol",
-                             method = c("AUCell", "UCell", "singscore", 
-                                        "ssgsea", "JASMINE"), #, "viper"
-                             aucell.MaxRank = NULL, ucell.MaxRank = NULL, 
-                             kcdf = 'Gaussian')
-
-Seurat::Assays(liver2SCT2final)
-head(liver2SCT2final@assays$UCell@data)
-head (liver2SCT2final$seurat_clusters)
-
-result.dge <- irGSEA.integrate(object = liver2SCT2final, 
-                               group.by = "seurat_clusters",
-                               metadata = NULL, col.name = NULL,
-                               method = c("AUCell","UCell", "singscore", 
-                                          "ssgsea", "JASMINE"))
-
-### Plot figures
-## heatmap plot
-irGSEA.heatmap.plot <- irGSEA.heatmap(object = result.dge, 
-                                      method = "RRA",
-                                      top = 50, 
-                                      show.geneset = NULL)
-irGSEA.heatmap.plot
-graph2tif(x = NULL, file='irGSEA_heatPlot_1', font = "Arial", cairo = TRUE,   
-          width = 5, height = 6, bg = "transparent")
-
-## bubble.plot
-irGSEA.bubble.plot <- irGSEA.bubble(object = result.dge, 
-                                    method = "RRA", 
-                                    top = 50)
-irGSEA.bubble.plot
-graph2tif(x = NULL, file='irGSEA_all_bubblePlot_2', font = "Arial", cairo = TRUE,   
-          width = 8, height = 8, bg = "transparent")
-
-
-## upset plot
-# Show the intersections of significant gene sets among clusters in RRA
-irGSEA.upset.plot <- irGSEA.upset(object = result.dge, 
-                                  method = "RRA")
-irGSEA.upset.plot
-graph2tif(x = NULL, file='irGSEA_upsetPlot_3', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-
-## Stacked bar plot
-# Show the intersections of significant gene sets among clusters in all methods
-
-irGSEA.barplot.plot <- irGSEA.barplot(object = result.dge,
-                                      method = c("AUCell","UCell", "singscore",
-                                                 "ssgsea", "JASMINE", "RRA"))
-irGSEA.barplot.plot
-graph2tif(x = NULL, file='irGSEA_StackedBarPlot_4', font = "Arial", cairo = TRUE,   
-          width = 6, height = 10, bg = "transparent")
-
-
-
-## local show
-## Show the expression and distribution of special gene sets in special gene set enrichment analysis method
-# density scatterplot
-# Show the expression and distribution of “HALLMARK-INFLAMMATORY-RESPONSE” in Ucell on UMAP plot.
-
-scatterplot <- irGSEA.density.scatterplot(object = liver2SCT2final,
-                                          method = "UCell",
-                                          show.geneset = "HALLMARK-INFLAMMATORY-RESPONSE",
-                                          reduction = "umap")
-scatterplot
-graph2tif(x = NULL, file='irGSEA_scatterplot_5', font = "Arial", cairo = TRUE,   
-          width = 5, height = 5, bg = "transparent")
-
-
-## half vlnplot
-# Show the expression and distribution of “HALLMARK-INFLAMMATORY-RESPONSE” in Ucell among clusters.
-
-halfvlnplot <- irGSEA.halfvlnplot(object = liver2SCT2final,
-                                  method = "AUCell",
-                                  show.geneset = "HALLMARK-INFLAMMATORY-RESPONSE")
-halfvlnplot
-graph2tif(x = NULL, file='irGSEA_vlnplot_6', font = "Arial", cairo = TRUE,   
-          width = 9, height = 6, bg = "transparent")
-
-## Show the expression and distribution of “HALLMARK-INFLAMMATORY-RESPONSE” between AUCell, UCell, singscore, ssgsea, JASMINE and viper among clusters.
-vlnplot <- irGSEA.vlnplot(object = liver2SCT2final,
-                          method = c("AUCell", "UCell", "singscore", "ssgsea", "JASMINE"),
-                          show.geneset = "HALLMARK-INFLAMMATORY-RESPONSE")
-vlnplot
-
-
-## ridge plot
-# Show the expression and distribution of “HALLMARK-INFLAMMATORY-RESPONSE” in Ucell among clusters.
-
-ridgeplot <- irGSEA.ridgeplot(object = liver2SCT2final,
-                              method = "UCell",
-                              show.geneset = "HALLMARK-INFLAMMATORY-RESPONSE")
-
-ridgeplot
-graph2tif(x = NULL, file='irGSEA_ridgeplot_7', font = "Arial", cairo = TRUE,   
-          width = 7, height = 7, bg = "transparent")
-
-## density heatmap
-#Show the expression and distribution of “HALLMARK-INFLAMMATORY-RESPONSE” in Ucell among clusters.
-
-densityheatmap <- irGSEA.densityheatmap(object = liver2SCT2final,
-                                        method = "UCell",
-                                        show.geneset = "HALLMARK-INFLAMMATORY-RESPONSE")
-densityheatmap
-graph2tif(x = NULL, file='irGSEA_density_8', font = "Arial", cairo = TRUE,   
-          width = 6, height = 6, bg = "transparent")
-
-
-
-
-# integrated and merged sample analysis
-
-
-# Metabolic pathways--Hallmark
-MergeLivIrGfinal <- irGSEA.score(object = MergeLivIrG, assay = "SCT", 
-                                 slot = "data", seeds = 123, ncores = 4,
-                                 min.cells = 3, min.feature = 0,
-                                 custom = F, geneset = NULL, msigdb = T, 
-                                 species = "Mus musculus", category = "H",  
-                                 subcategory = NULL, geneid = "symbol",
-                                 method = c("AUCell", "UCell", "singscore", 
-                                            "ssgsea", "JASMINE"), #, "viper"
-                                 aucell.MaxRank = NULL, ucell.MaxRank = NULL, 
-                                 kcdf = 'Gaussian')
-
-Seurat::Assays(MergeLivIrGfinal)
-rownames(MergeLivIrGfinal@assays$UCell@data)
-head (MergeLivIrGfinal$seurat_clusters)
-
-result.dge <- irGSEA.integrate(object = MergeLivIrGfinal, 
-                               group.by = "seurat_clusters",
-                               metadata = NULL, col.name = NULL,
-                               method = c("AUCell","UCell", "singscore", 
-                                          "ssgsea", "JASMINE"))
-
-
-### Plot figures
-## heatmap plot
-irGSEA.heatmap.plot <- irGSEA.heatmap(object = result.dge, 
-                                      method = "RRA",
-                                      top = 50, 
-                                      show.geneset = NULL)
-irGSEA.heatmap.plot
-graph2tif(x = NULL, file='irGSEA_all_heatPlot_HM1', font = "Arial", cairo = TRUE,   
-          width = 5, height = 6, bg = "transparent")
-
-## bubble.plot
-irGSEA.bubble.plot <- irGSEA.bubble(object = result.dge, 
-                                    method = "RRA", 
-                                    top = 50)
-irGSEA.bubble.plot
-graph2tif(x = NULL, file='irGSEA_all_bubblePlot_HM2', font = "Arial", cairo = TRUE,   
-          width = 8, height = 8, bg = "transparent")
-
-
-## upset plot
-# Show the intersections of significant gene sets among clusters in RRA
-irGSEA.upset.plot <- irGSEA.upset(object = result.dge, 
-                                  method = "RRA")
-irGSEA.upset.plot
-graph2tif(x = NULL, file='irGSEA_all_upsetPlot_HM3', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-
-## Stacked bar plot
-# Show the intersections of significant gene sets among clusters in all methods
-
-irGSEA.barplot.plot <- irGSEA.barplot(object = result.dge,
-                                      method = c("AUCell","UCell", "singscore",
-                                                 "ssgsea", "JASMINE", "RRA"))
-irGSEA.barplot.plot
-graph2tif(x = NULL, file='irGSEA_all_StackedBarPlot_HM4', font = "Arial", cairo = TRUE,   
-          width = 6, height = 10, bg = "transparent")
-
-
-
-## local show
-## Show the expression and distribution of special gene sets in special gene set enrichment analysis method
-# density scatterplot
-# Show the expression and distribution of “HALLMARK-FATTY-ACID-METABOLISM” in Ucell on UMAP plot.
-
-scatterplot <- irGSEA.density.scatterplot(object = MergeLivIrGfinal,
-                                          method = "UCell",
-                                          show.geneset = "HALLMARK-FATTY-ACID-METABOLISM",
-                                          reduction = "umap")
-scatterplot
-graph2tif(x = NULL, file='irGSEA_all_scatterplot_HM5', font = "Arial", cairo = TRUE,   
-          width = 5, height = 5, bg = "transparent")
-
-
-## half vlnplot
-# Show the expression and distribution of “HALLMARK-FATTY-ACID-METABOLISM” in Ucell among clusters.
-
-halfvlnplot <- irGSEA.halfvlnplot(object = MergeLivIrGfinal,
-                                  method = "AUCell",
-                                  show.geneset = "HALLMARK-FATTY-ACID-METABOLISM")
-halfvlnplot
-graph2tif(x = NULL, file='irGSEA_all_vlnplot_HM6', font = "Arial", cairo = TRUE,   
-          width = 9, height = 6, bg = "transparent")
-
-## Show the expression and distribution of “HALLMARK-INFLAMMATORY-RESPONSE” between AUCell, UCell, singscore, ssgsea, JASMINE and viper among clusters.
-vlnplot <- irGSEA.vlnplot(object = MergeLivIrGfinal,
-                          method = c("AUCell", "UCell", "singscore", "ssgsea", "JASMINE"),
-                          show.geneset = "HALLMARK-FATTY-ACID-METABOLISM")
-vlnplot
-
-
-## ridge plot
-# Show the expression and distribution of “HALLMARK-INFLAMMATORY-RESPONSE” in Ucell among clusters.
-
-ridgeplot <- irGSEA.ridgeplot(object = MergeLivIrGfinal,
-                              method = "UCell",
-                              show.geneset = "HALLMARK-FATTY-ACID-METABOLISM")
-
-ridgeplot
-graph2tif(x = NULL, file='irGSEA_all_ridgeplot_HM7', font = "Arial", cairo = TRUE,   
-          width = 7, height = 7, bg = "transparent")
-
-## density heatmap
-#Show the expression and distribution of “HALLMARK-INFLAMMATORY-RESPONSE” in Ucell among clusters.
-
-densityheatmap <- irGSEA.densityheatmap(object = MergeLivIrGfinal,
-                                        method = "UCell",
-                                        show.geneset = "HALLMARK-FATTY-ACID-METABOLISM")
-densityheatmap
-graph2tif(x = NULL, file='irGSEA_all_density_HM8', font = "Arial", cairo = TRUE,   
-          width = 6, height = 6, bg = "transparent")
-
-
-
-
-#---------------
-# Metabolic pathways-General, geneset3
-# Make gene list for further analysis
-
-head(geneset3)
-
-table(geneset3$term)
-geneset3[geneset3$term=="Carbohydrate metabolism",]$gene
-
-geneset3 <- na.omit(geneset3)
-write.table(geneset3, "KEGGMetabolisMMGeneral.txt", sep = "\t")
-
-geneset4 <- list()
-geneset4$Carbohydrate_metabolism <- geneset3[geneset3$term=="Carbohydrate metabolism",]$gene
-geneset4$Amino_acid_metabolism <- geneset3[geneset3$term=="Amino acid metabolism",]$gene
-geneset4$Energy_metabolism <- geneset3[geneset3$term=="Energy metabolism",]$gene
-geneset4$Glycan_biosynthesis_and_metabolism <- geneset3[geneset3$term=="Glycan biosynthesis and metabolism",]$gene
-geneset4$Lipid_metabolism <- geneset3[geneset3$term=="Lipid metabolism",]$gene
-geneset4$Metabolism_of_cofactors_and_vitamins <- geneset3[geneset3$term=="Metabolism of cofactors and vitamins",]$gene
-geneset4$Nucleotide_metabolism <- geneset3[geneset3$term=="Nucleotide metabolismm",]$gene
-head(geneset4)
-save(geneset4, file = "KEGGMetabolismirGSEA.RData")
-#load("KEGGMetabolismirGSEA.RData")
-
-
-MergeLivIrGfinal <- irGSEA.score(object = MergeLivIrG, assay = "SCT", 
-                                 slot = "data", custom = T, geneset = geneset4, 
-                                  method = c("AUCell", "UCell", "singscore", 
-                                            "ssgsea", "JASMINE"), #, "viper"
-                                 aucell.MaxRank = NULL, ucell.MaxRank = NULL, 
-                                 kcdf = 'Gaussian')
-?irGSEA.score
-Seurat::Assays(MergeLivIrGfinal)
-rownames(MergeLivIrGfinal@assays$UCell@data)
-head (MergeLivIrGfinal$seurat_clusters)
-
-result.dge <- irGSEA.integrate(object = MergeLivIrGfinal, 
-                               group.by = "seurat_clusters",
-                               metadata = NULL, col.name = NULL,
-                               method = c("AUCell","UCell", "singscore", 
-                                          "ssgsea", "JASMINE"))
-
-
-### Plot figures
-## heatmap plot
-irGSEA.heatmap.plot <- irGSEA.heatmap(object = result.dge, 
-                                      method = "RRA",
-                                      top = 50, 
-                                      show.geneset = NULL)
-irGSEA.heatmap.plot
-graph2tif(x = NULL, file='irGSEA_all_heatPlot_Met1', font = "Arial", cairo = TRUE,   
-          width = 8, height = 5.5, bg = "transparent")
-
-## bubble.plot
-irGSEA.bubble.plot <- irGSEA.bubble(object = result.dge, 
-                                    method = "RRA", 
-                                    top = 50)
-irGSEA.bubble.plot
-graph2tif(x = NULL, file='irGSEA_all_bubblePlot_Met2', font = "Arial", cairo = TRUE,   
-          width = 8, height = 8, bg = "transparent")
-
-
-## upset plot
-# Show the intersections of significant gene sets among clusters in RRA
-irGSEA.upset.plot <- irGSEA.upset(object = result.dge, 
-                                  method = "RRA")
-irGSEA.upset.plot
-graph2tif(x = NULL, file='irGSEA_all_upsetPlot_Met3', font = "Arial", cairo = TRUE,   
-          width = 6, height = 4, bg = "transparent")
-
-
-## Stacked bar plot
-# Show the intersections of significant gene sets among clusters in all methods
-
-irGSEA.barplot.plot <- irGSEA.barplot(object = result.dge,
-                                      method = c("AUCell","UCell", "singscore",
-                                                 "ssgsea", "JASMINE", "RRA"))
-irGSEA.barplot.plot
-graph2tif(x = NULL, file='irGSEA_all_StackedBarPlot_Met4', font = "Arial", cairo = TRUE,   
-          width = 6, height = 10, bg = "transparent")
-
-
-
-## local show
-## Show the expression and distribution of special gene sets in special gene set enrichment analysis method
-# density scatterplot
-# Show the expression and distribution of “Energy-metabolism” in Ucell on UMAP plot.
-rownames(MergeLivIrGfinal@reductions$umap.harmony)
-head (MergeLivIrGfinal$seurat_clusters)
-
-scatterplot <- irGSEA.density.scatterplot(object = MergeLivIrGfinal,
-                                          method = "UCell",
-                                          show.geneset = "Energy-metabolism",
-                                          reduction = "umap.harmony")
-scatterplot
-graph2tif(x = NULL, file='irGSEA_all_scatterplot_Met5', font = "Arial", cairo = TRUE,   
-          width = 5, height = 5, bg = "transparent")
-
-
-## half vlnplot
-# Show the expression and distribution of “Energy-metabolism” in Ucell among clusters.
-
-halfvlnplot <- irGSEA.halfvlnplot(object = MergeLivIrGfinal,
-                                  method = "AUCell",
-                                  show.geneset = "Energy-metabolism")
-halfvlnplot
-graph2tif(x = NULL, file='irGSEA_all_vlnplot_Met6', font = "Arial", cairo = TRUE,   
-          width = 9, height = 6, bg = "transparent")
-
-## Show the expression and distribution of “Energy-metabolism” between AUCell, UCell, singscore, ssgsea, JASMINE and viper among clusters.
-vlnplot <- irGSEA.vlnplot(object = MergeLivIrGfinal,
-                          method = c("AUCell", "UCell", "singscore", "ssgsea", "JASMINE"),
-                          show.geneset = "Energy-metabolism")
-vlnplot
-
-
-## ridge plot
-# Show the expression and distribution of “HALLMARK-INFLAMMATORY-RESPONSE” in Ucell among clusters.
-
-ridgeplot <- irGSEA.ridgeplot(object = MergeLivIrGfinal,
-                              method = "UCell",
-                              show.geneset = "Energy-metabolism")
-
-ridgeplot
-graph2tif(x = NULL, file='irGSEA_all_ridgeplot_Met7', font = "Arial", cairo = TRUE,   
-          width = 10, height = 7, bg = "transparent")
-
-## density heatmap
-#Show the expression and distribution of “Energy-metabolism” in Ucell among clusters.
-
-densityheatmap <- irGSEA.densityheatmap(object = MergeLivIrGfinal,
-                                        method = "UCell",
-                                        show.geneset = "Energy-metabolism")
-densityheatmap
-graph2tif(x = NULL, file='irGSEA_all_density_Met8', font = "Arial", cairo = TRUE,   
-          width = 6, height = 6, bg = "transparent")
-
-
-
-# ----------------
-### compare different treatments/groups using irGSEA in general pathways
-# irGSEA
-MergeLivIrGfinal <- irGSEA.score(object = MergeLivIrG, assay = "SCT", 
-                                 slot = "data", custom = T, geneset = geneset4, 
-                                 method = c("AUCell", "UCell", "singscore", 
-                                            "ssgsea", "JASMINE"), #, "viper"
-                                 aucell.MaxRank = NULL, ucell.MaxRank = NULL, 
-                                 kcdf = 'Gaussian')
-
-
-# Divide treatment groups
-MergeLivIrGfinal1=MergeLivIrGfinal
-head(MergeLivIrGfinal1@meta.data)
-tail(MergeLivIrGfinal1@meta.data)
-table(MergeLivIrGfinal1$orig.ident)
-
-# Change group names
-MergeLivIrGfinal1$orig.ident[MergeLivIrGfinal1$orig.ident == "PairFed1"] <- "Group1"
-MergeLivIrGfinal1$orig.ident[MergeLivIrGfinal1$orig.ident == "PairFed2"] <- "Group1"
-
-MergeLivIrGfinal1$orig.ident[MergeLivIrGfinal1$orig.ident == "GDF15_1"] <- "Group2"
-MergeLivIrGfinal1$orig.ident[MergeLivIrGfinal1$orig.ident == "GDF15_2"] <- "Group2"
-
-table(MergeLivIrGfinal1$orig.ident)
-
-
-MergeLivIrGfinal1$celltype.stim <- paste(Idents(MergeLivIrGfinal1), MergeLivIrGfinal1$orig.ident, sep = "_")
-MergeLivIrGfinal1$celltype <- Idents(MergeLivIrGfinal1)
-table(Idents(MergeLivIrGfinal1))
-Idents(MergeLivIrGfinal1) <- "celltype.stim"
-table(MergeLivIrGfinal1$celltype.stim)
-table(Idents(MergeLivIrGfinal1))
-
-
-Seurat::Assays(MergeLivIrGfinal1)
-rownames(MergeLivIrGfinal1@assays$UCell@data)
-head (MergeLivIrGfinal1$celltype.stim)
-
-result.dge <- irGSEA.integrate(object = MergeLivIrGfinal1, 
-                               group.by = "celltype.stim",
-                               metadata = NULL, col.name = NULL,
-                               method = c("AUCell","UCell", "singscore", 
-                                          "ssgsea", "JASMINE"))
-
-### Plot figures
-## heatmap plot
-irGSEA.heatmap.plot <- irGSEA.heatmap(object = result.dge, 
-                                      method = "RRA",
-                                      top = 50, 
-                                      show.geneset = NULL)
-irGSEA.heatmap.plot
-graph2tif(x = NULL, file='irGSEA_all_heatPlot_MetGenrGrp1', font = "Arial", cairo = TRUE,   
-          width = 12, height = 12, bg = "transparent")
-
-## bubble.plot
-irGSEA.bubble.plot <- irGSEA.bubble(object = result.dge, 
-                                    method = "RRA", 
-                                    top = 50)
-irGSEA.bubble.plot
-graph2tif(x = NULL, file='irGSEA_all_bubblePlot_MetGenrGrp2', font = "Arial", cairo = TRUE,   
-          width = 14, height = 8, bg = "transparent")
-
-
-## upset plot
-# Show the intersections of significant gene sets among clusters in RRA
-irGSEA.upset.plot <- irGSEA.upset(object = result.dge, 
-                                  method = "RRA")
-irGSEA.upset.plot
-graph2tif(x = NULL, file='irGSEA_all_upsetPlot_MetGenrGrp3', font = "Arial", cairo = TRUE,   
-          width = 6, height = 6, bg = "transparent")
-
-
-## Stacked bar plot
-# Show the intersections of significant gene sets among clusters in all methods
-
-irGSEA.barplot.plot <- irGSEA.barplot(object = result.dge,
-                                      method = c("AUCell","UCell", "singscore",
-                                                 "ssgsea", "JASMINE", "RRA"))
-irGSEA.barplot.plot
-graph2tif(x = NULL, file='irGSEA_all_StackedBarPlot_MetGenrGrp4', font = "Arial", cairo = TRUE,   
-          width = 10, height = 8, bg = "transparent")
-
-
-
-# local show
-# Show the expression and distribution of special gene sets in special gene set enrichment analysis method
-# density scatterplot
-# Show the expression and distribution of “Energy-metabolism” in Ucell on UMAP plot.
-# rownames(MergeLivIrGfinal1@reductions$umap.harmony)
-# head (MergeLivIrGfinal1$seurat_clusters)
-# 
-# scatterplot <- irGSEA.density.scatterplot(object = MergeLivIrGfinal1,
-#                                           method = "UCell",
-#                                           show.geneset = "Energy-metabolism",
-#                                           reduction = "umap.harmony")
-# scatterplot
-# graph2tif(x = NULL, file='irGSEA_all_scatterplot_MetGenrGrp5', font = "Arial", cairo = TRUE,
-#           width = 5, height = 5, bg = "transparent")
-
-
-## half vlnplot
-# Show the expression and distribution of “Energy-metabolism” in Ucell among clusters.
-head (MergeLivIrGfinal1$celltype.stim)
-halfvlnplot <- irGSEA.halfvlnplot(object = MergeLivIrGfinal1,
-                                  method = "AUCell", group.by = "celltype.stim",
-                                  show.geneset = "Energy-metabolism")
-halfvlnplot
-graph2tif(x = NULL, file='irGSEA_all_vlnplot_MetGenrGrp6', font = "Arial", cairo = TRUE,   
-          width = 10, height = 6, bg = "transparent")
-
-## Show the expression and distribution of “Energy-metabolism” between AUCell, UCell, singscore, ssgsea, JASMINE and viper among clusters.
-vlnplot <- irGSEA.vlnplot(object = MergeLivIrGfinal1,
-                          method = c("AUCell", "UCell", "singscore", "ssgsea", "JASMINE"),
-                          show.geneset = "Energy-metabolism")
-vlnplot
-
-
-## ridge plot
-# Show the expression and distribution of “HALLMARK-INFLAMMATORY-RESPONSE” in Ucell among clusters.
-
-ridgeplot <- irGSEA.ridgeplot(object = MergeLivIrGfinal1,
-                              method = "UCell",
-                              show.geneset = "Energy-metabolism")
-
-ridgeplot
-graph2tif(x = NULL, file='irGSEA_all_ridgeplot_MetGenrGrp7', font = "Arial", cairo = TRUE,   
-          width = 15, height = 7, bg = "transparent")
-
-## density heatmap
-#Show the expression and distribution of “Energy-metabolism” in Ucell among clusters.
-
-densityheatmap <- irGSEA.densityheatmap(object = MergeLivIrGfinal1,
-                                        method = "UCell",
-                                        show.geneset = "Energy-metabolism")
-densityheatmap
-graph2tif(x = NULL, file='irGSEA_all_density_MetGenrGrp8', font = "Arial", cairo = TRUE,   
-          width = 9, height = 6, bg = "transparent")
-
-
-
-
-
-#-----------------------
-# Metabolic pathways-detailed, geneset5
-# Make gene list for further analysis
-
-head(geneset1)
-
-table(geneset1$term)
-geneset1 <- na.omit(geneset1)
-write.table(geneset1, "KEGGMetabolisMMDetail.txt", sep = "\t")
-
-table(geneset1$term)
-rownames(table(geneset1$term))
-names(geneset4)
-geneset5 <- list()
-
-for (i in rownames(table(geneset1$term))){
-  print(i)
-  geneset5[[i]] <- geneset1[geneset1$term==i,]$gene
-  
-}
-head(geneset5)
-
-save(geneset5, file = "KEGGMetabolismirGSEADetail.RData")
-#load("KEGGMetabolismirGSEADetail.RData")
-
-
-MergeLivIrGfinal <- irGSEA.score(object = MergeLivIrG, assay = "SCT", 
-                                 slot = "data", custom = T, geneset = geneset5, 
-                                 method = c("AUCell", "UCell", "singscore", 
-                                            "ssgsea", "JASMINE"), #, "viper"
-                                 aucell.MaxRank = NULL, ucell.MaxRank = NULL, 
-                                 kcdf = 'Gaussian')
-
-Seurat::Assays(MergeLivIrGfinal)
-rownames(MergeLivIrGfinal@assays$UCell@data)
-head (MergeLivIrGfinal$seurat_clusters)
-saveRDS(MergeLivIrGfinal, file = "MergeLivIrGSEA_detailed.rds")
-
-
-result.dge1 <- irGSEA.integrate(object = MergeLivIrGfinal, 
-                               group.by = "seurat_clusters",
-                               metadata = NULL, col.name = NULL,
-                               method = c("AUCell","UCell", "singscore", 
-                                          "ssgsea", "JASMINE"))
-
-
-
-
-# demarkerHSC <- FindMarkers(immune.combined, ident.1 = "6: HSC_GDF15_1", ident.2 = "6: HSC_PairFed1", verbose = FALSE)
-# head(demarkerHSC, n = 15)
-# write.csv(demarkerHSC, 'DE_HSC_ctlTrt.csv')
-# demarkerHSC <- read.csv("DE_HSC_ctlTrt.csv", header=TRUE)
-# head(demarkerHSC)
-# row.names(demarkerHSC)=demarkerHSC$X
-# demarkerHSC=demarkerHSC[,-1]
-# de_markers=demarkerHSC
-
-
-### Plot figures
-## heatmap plot
-irGSEA.heatmap.plot <- irGSEA.heatmap(object = result.dge, 
-                                      method = "RRA",
-                                      top = 50, 
-                                      show.geneset = NULL)
-?irGSEA.heatmap
-
-graph2tif(x = NULL, file='irGSEA_all_heatPlot_MetDeta1', font = "Arial", cairo = TRUE,   
-          width = 8, height = 5.5, bg = "transparent")
-
-## bubble.plot
-irGSEA.bubble.plot <- irGSEA.bubble(object = result.dge, 
-                                    method = "RRA", 
-                                    top = 50)
-irGSEA.bubble.plot
-graph2tif(x = NULL, file='irGSEA_all_bubblePlot_MetDeta2', font = "Arial", cairo = TRUE,   
-          width = 8, height = 8, bg = "transparent")
-
-
-## upset plot
-# Show the intersections of significant gene sets among clusters in RRA
-irGSEA.upset.plot <- irGSEA.upset(object = result.dge, 
-                                  method = "RRA")
-irGSEA.upset.plot
-graph2tif(x = NULL, file='irGSEA_all_upsetPlot_MetDeta3', font = "Arial", cairo = TRUE,   
-          width = 6, height = 6, bg = "transparent")
-
-
-## Stacked bar plot
-# Show the intersections of significant gene sets among clusters in all methods
-
-irGSEA.barplot.plot <- irGSEA.barplot(object = result.dge,
-                                      method = c("AUCell","UCell", "singscore",
-                                                 "ssgsea", "JASMINE", "RRA"))
-irGSEA.barplot.plot
-graph2tif(x = NULL, file='irGSEA_all_StackedBarPlot_MetDeta4', font = "Arial", cairo = TRUE,   
-          width = 6, height = 7, bg = "transparent")
-
-
-
-## local show
-## Show the expression and distribution of special gene sets in special gene set enrichment analysis method
-# density scatterplot
-# Show the expression and distribution of “Fatty acid degradation” in Ucell on UMAP plot.
-rownames(MergeLivIrGfinal@reductions$umap.harmony)
-head (MergeLivIrGfinal@assays$ssgsea)
-rownames(MergeLivIrGfinal@assays$ssgsea)
-head (MergeLivIrGfinal@assays$ssgsea@data)
-
-scatterplot <- irGSEA.density.scatterplot(object = MergeLivIrGfinal,
-                                          method = "UCell",
-                                          show.geneset = "Fatty acid degradation",
-                                          reduction = "umap.harmony")
-scatterplot
-graph2tif(x = NULL, file='irGSEA_all_scatterplot_MetDeta5', font = "Arial", cairo = TRUE,   
-          width = 5, height = 4.5, bg = "transparent")
-
-
-## half vlnplot
-# Show the expression and distribution of "Fatty acid degradation” in Ucell among clusters.
-
-halfvlnplot <- irGSEA.halfvlnplot(object = MergeLivIrGfinal,
-                                  method = "AUCell",
-                                  show.geneset = "Fatty acid degradation")
-halfvlnplot
-graph2tif(x = NULL, file='irGSEA_all_vlnplot_MetDeta6', font = "Arial", cairo = TRUE,   
-          width = 9, height = 6, bg = "transparent")
-
-## Show the expression and distribution of “Fatty acid degradation” between AUCell, UCell, singscore, ssgsea, JASMINE and viper among clusters.
-vlnplot <- irGSEA.vlnplot(object = MergeLivIrGfinal,
-                          method = c("AUCell", "UCell", "singscore", "ssgsea", "JASMINE"),
-                          show.geneset = "Fatty acid degradation")
-vlnplot
-
-
-## ridge plot
-# Show the expression and distribution of “Fatty acid degradation” in Ucell among clusters.
-
-ridgeplot <- irGSEA.ridgeplot(object = MergeLivIrGfinal,
-                              method = "UCell",
-                              show.geneset = "Fatty acid degradation")
-
-ridgeplot
-graph2tif(x = NULL, file='irGSEA_all_ridgeplot_MetDeta7', font = "Arial", cairo = TRUE,   
-          width = 10, height = 7, bg = "transparent")
-
-## density heatmap
-#Show the expression and distribution of “Fatty acid degradation” in Ucell among clusters.
-
-densityheatmap <- irGSEA.densityheatmap(object = MergeLivIrGfinal,
-                                        method = "UCell",
-                                        show.geneset = "Fatty acid degradation")
-densityheatmap
-graph2tif(x = NULL, file='irGSEA_all_density_MetDeta8', font = "Arial", cairo = TRUE,   
-          width = 6, height = 6, bg = "transparent")
-
-
-
-
-
-
-##------------------- Correlation and difference analysis  ------------------------##
-BiocManager::install("cmapR")
-library("cmapR")
-if (!require("devtools", quietly = TRUE)){
-  install.packages("devtools")
-}
-devtools::install_github("nicolerg/ssGSEA2")
-BiocManager::install("scran")
-BiocManager::install("ggplot.multistats")
-library("ssGSEA2")
-library("GSVA")
-library("escape")
-library(SingleCellExperiment)
-library(scran)
-library(Seurat)
-library(SeuratObject)
-library(RColorBrewer)
-library(ggplot2)
-library(dittoSeq)
-library(ggplot.multistats)
-
-head(MergeLivIrGfinal1@assays$SCT@data)
-head(MergeLivIrGfinal1@assays$ssgsea@data)
-head(MergeLivIrGfinal1@assays$UCell@data)
-head(MergeLivIrGfinal1@assays$ssgsea@scale.data)
-tail(MergeLivIrGfinal1@assays$UCell@scale.data)
-
-head(MergeLivIrGfinal1@meta.data)
-
-
-## Load the data_multiple integrated sample
-MergeLivIrGfinal1$celltype.stim
-
-head(MergeLivIrGfinal1@meta.data)
-
-
-# get assay data
-seurat_object=MergeLivIrGfinal1
-# get assay data（SCT）
-gene_expr1 <- GetAssayData(seurat_object, assay = "UCell", slot = "data")["Carbohydrate-metabolism", ]
-gene_expr2 <- GetAssayData(seurat_object, assay = "UCell", slot = "data")["Energy-metabolism", ]
-
-# add them to meta.data
-seurat_object$"CarbohydrateMetabolism" <- as.numeric(gene_expr1)
-seurat_object$"EnergyMetabolism" <- as.numeric(gene_expr2)
-
-
-
-# dittoScatterHex to show relationship
-head(seurat_object@meta.data)
-dittoScatterHex(seurat_object, x.var = "CarbohydrateMetabolism",
-                y.var = "EnergyMetabolism", color.var = "celltype.stim",
-                colors = c(1:22), max.density = 15)
-
-graph2tif(x = NULL, file='Cor_all_1', font = "Arial", cairo = TRUE,   
-          width = 9, height = 4.5, bg = "transparent")
-
-
-
-# Put the celltype you want to show in meta.data
-table(seurat_object$celltype)
-seurat_object_sub <- subset(seurat_object, subset = celltype %in% c("0: Hepatocytes1_PairFed","0: Hepatocytes1_GDF15"))
-
-# dittoScatterHex to show relationship
-head(seurat_object_sub@meta.data)
-dittoScatterHex(seurat_object_sub, x.var = "CarbohydrateMetabolism",
-                y.var = "EnergyMetabolism", color.var = "celltype.stim",
-                colors = c(1:22), max.density = 15)
-
-graph2tif(x = NULL, file='Cor_grp_2', font = "Arial", cairo = TRUE,   
-          width = 7, height = 4.5, bg = "transparent")
-
-
-
-# ------------------------------
-######## ssGSEA analysis and pathway interaction (correlation) analysis #######
-seurat_obj=seurat_object
-
-# extract data frame
-expr <- as.matrix(GetAssayData(seurat_obj, slot = "data", assay = "SCT"))
-
-# define metabolic genesets
-head(geneset4)
-gene_sets <- geneset4
-
-# ssGSEA
-library(GSVA)
-library(limma)
-scores <- gsva(ssgseaParam(expr, gene_sets), verbose=T)  # results are: gene_set × cell/spot
-head(scores)
-
-
-# reverse and add them to meta.data
-scr_ssgsea <- t(scores)
-seurat_object <- AddMetaData(seurat_obj, metadata = scr_ssgsea)
-
-head(seurat_object@meta.data)
-
-# see if ssGSEA is correlated to UCell
-dittoScatterHex(seurat_object, x.var = "CarbohydrateMetabolism",
-                y.var = "Carbohydrate_metabolism", color.var = "celltype.stim",
-                colors = c(1:24), max.density = 15)
-
-
-# Now calculate Spearman correlations (for spatial data) in enrichment scores between different pathways
-library(corrplot)
-cor_matrix <- cor(scr_ssgsea, method = "spearman")
-write.csv(cor_matrix, 'CorrSsgsea_1.csv')
-
-# Calculate P value
-Pval <- cor.mtest(scr_ssgsea)
-write.csv(Pval, 'CorrSsgsea_Pval_1.csv')
-
-# visulization: heatmap
-library(pheatmap)
-pheatmap(cor_matrix, show_rownames = T, show_colnames = T,
-         cluster_rows = F,
-         cluster_cols = F,)
-
-graph2tif(x = NULL, file='Cor_grpHM_3', font = "Arial", cairo = TRUE,   
-          width = 5, height = 5, bg = "transparent")
-
-# visulization: corrplot
-library(corrplot)
-corrplot(cor_matrix, add=TRUE, type="lower", method="number",
-         col="black",diag=FALSE,tl.pos="n", cl.pos="n")
-graph2tif(x = NULL, file='Cor_grpHMdot_4', font = "Arial", cairo = TRUE,   
-          width = 8, height = 8, bg = "transparent")
-
-
-# visulization: ggscatter, showing ssGESA pathway correlation
-library("ggpubr")
-head(scr_ssgsea)
-str(scr_ssgsea)
-#scr_ssgseaFrame = as.data.frame(scr_ssgsea)
-scr_ssgseaFrame <- FetchData(seurat_object, vars = c("Carbohydrate_metabolism", "Energy_metabolism"))
-head(scr_ssgseaFrame)
-ggscatter(scr_ssgseaFrame, x = "Carbohydrate_metabolism", y = "Energy_metabolism", 
-          add = "reg.line", conf.int = TRUE, size = 0.3,
-          cor.coef = TRUE, cor.method = "spearman", color="blue",
-          xlab = "Carbohydrate_metabolism", ylab = "Energy_metabolism")
-
-graph2tif(x = NULL, file='Cor_grpCorline_5', font = "Arial", cairo = TRUE,   
-          width = 4, height = 4, bg = "transparent")
-
-
-# visualize gene set score in spatial
-head(seurat_object@meta.data)
-SpatialFeaturePlot(seurat_object, features = c("Glycan_biosynthesis_and_metabolism", "Energy_metabolism"))
-graph2tif(x = NULL, file='Cor_grpGseaScore_6', font = "Arial", cairo = TRUE,   
-          width = 4, height = 4, bg = "transparent")
-
-
-
-
-### extract part cells and groups to run correlation analysis
-# Put the celltype you want to show in meta.data
-library(corrplot)
-table(seurat_object$celltype)
-seurat_object_sub <- subset(seurat_object, subset = celltype %in% c("0: Hepatocytes1_PairFed","0: Hepatocytes1_GDF15"))
-
-# run correlation analysis
-scr_ssgseaFrame1 <- FetchData(seurat_object_sub, vars = c("Carbohydrate_metabolism", "Energy_metabolism"))
-head(scr_ssgseaFrame1)
-ggscatter(scr_ssgseaFrame1, x = "Carbohydrate_metabolism", y = "Energy_metabolism", 
-          add = "reg.line", conf.int = TRUE, size = 0.3,
-          cor.coef = TRUE, cor.method = "spearman", color="blue",
-          xlab = "Carbohydrate_metabolism", ylab = "Energy_metabolism")
-
-graph2tif(x = NULL, file='Cor_grpCorlineOneCelTyp_7', font = "Arial", cairo = TRUE,   
-          width = 4, height = 4, bg = "transparent")
-
-
-# Calculate P and R value
-head(scr_ssgseaFrame1)
-cor_matrix <- cor(scr_ssgseaFrame1, method = "spearman")
-Pval <- cor.test(scr_ssgseaFrame1$Carbohydrate_metabolism, scr_ssgseaFrame1$Energy_metabolism,
-                 method = "spearman", se = "complete.obs")
-R_val <- round(Pval$estimate, 2)
-p_val <- signif(Pval$p.value, 3)
-title = paste0("CarbohydrateMetabolism (Spearman R = ", R_val, ", p = ", p_val,")")
-
-# dittoScatterHex to show relationship and p value
-head(seurat_object_sub@meta.data)
-dittoScatterHex(seurat_object_sub, x.var = "CarbohydrateMetabolism",
-                y.var = "EnergyMetabolism", color.var = "celltype.stim",
-                colors = c(1:22), max.density = 15,do.contour = TRUE,
-                xlab = title, #add pvalue R
-                bins = 50, do.label= F)
-
-graph2tif(x = NULL, file='Cor_grpCorlineOneCelTyp_8', font = "Arial", cairo = TRUE,   
-          width = 7, height = 5, bg = "transparent")
-
-
-
-
-
-
-
-#------ DA analysis for geneset score using a detailed geneset------------------
-# load data
-DEgs1 <- readRDS("CompassAnal.rds")
-
-# ssGSEA analysis
-# extract data frame
-seurat_obj = DEgs1
-expr <- as.matrix(GetAssayData(seurat_obj, slot = "data", assay = "SCT"))
-
-# define metabolic genesets
-load("KEGGMetabolismirGSEA.RData")
-head(geneset4)
-load("KEGGMetabolismirGSEADetail.RData")
-head(geneset5)
-gene_sets <- geneset4
-
-
-# ssGSEA
-library(GSVA)
-library(limma)
-library(dittoSeq)
-scores <- gsva(ssgseaParam(expr, gene_sets), verbose=T)  # results are: gene_set × cell/spot
-head(scores)
-
-
-# reverse and add them to meta.data
-scr_ssgsea <- t(scores)
-seurat_object <- AddMetaData(seurat_obj, metadata = scr_ssgsea)
-
-head(seurat_object@meta.data)
-
-
-
-# dittoScatterHex to show relationship and p value
-dittoScatterHex(seurat_object, x.var = "Arginine biosynthesis",
-                y.var = "Lipoic acid metabolism", color.var = "celltype.stim",
-                colors = c(1:26), max.density = 15,#do.contour = TRUE,
-                xlab = "Arginine biosynthesis (Spearman no significance)", #add pvalue R
-                bins = 50, do.label= F)
-
-
-graph2tif(x = NULL, file='Cor_grpCorlineOneCelTyp_8nosig', font = "Arial", cairo = TRUE,   
-          width = 11, height = 5, bg = "transparent")
-
-
-
-# DEG and volcano plot
-# select one cell type
-table(seurat_object$celltype)
-table(seurat_object$celltype.stim)
-seurat_object_sub <- subset(seurat_object, subset = celltype %in% "0: Hepatocytes1")
-table(Idents(seurat_object_sub))
-table(seurat_object_sub$celltype.stim)
-head(seurat_object@meta.data)
-
-
-# extract pathway names
-meta <- seurat_object_sub@meta.data
-head(meta)
-group_var <- "celltype.stim"
-
-pathway_cols <- setdiff(colnames(meta), group_var)
-class(pathway_cols)
-pathway_cols=pathway_cols[9:87]
-
-# DE analysis
-library(limma)
-
-diff_result <- data.frame(
-  pathway = pathway_cols,
-  p_val = NA,
-  log2FC = NA
-)
-
-for (i in seq_along(pathway_cols)) {
-  pw <- pathway_cols[i]
-  
-  group1 <- meta[meta[[group_var]] == "0: Hepatocytes1_Group1", pw]
-  group2 <- meta[meta[[group_var]] == "0: Hepatocytes1_Group2", pw]
-  
-  test <- wilcox.test(group1, group2)
-
-  # calculate log2 fold change
-  log2FC <- log2(mean(group2) + 1e-6) - log2(mean(group1) + 1e-6)
-
-  diff_result$p_val[i] <- test$p.value
-  diff_result$log2FC[i] <- log2FC
-}
-
-# adjust p value
-diff_result$pval_adj <- p.adjust(diff_result$p_val, method = "holm")
-head(diff_result)
-
-
-
-
-## volcano plot
-# data preparation
-library(ggplot2)
-volcano_df <- diff_result %>%
-  mutate(log10p = -log10(pval_adj),
-         significant = (pval_adj < 0.1 & abs(log2FC) > 0.1))
-
-# 绘图
-ggplot(volcano_df, aes(x = log2FC, y = log10p, label = pathway)) +
-  geom_point(aes(color = significant), size = 2) +
-  geom_text(data = subset(volcano_df, significant), 
-            aes(label = pathway), vjust = -1, size = 3.5) +
-  scale_color_manual(values = c("grey", "red")) +
-  geom_hline(yintercept = -log10(0.1), linetype = "dashed", color = "blue") +
-  geom_vline(xintercept = c(-0.1, 0.1), linetype = "dashed", color = "blue") +
-  theme_minimal() +
-  labs(title = "ssGSEA Pathway Differential Analysis",
-       x = "log2 Fold Change (Group2 vs Group1)",
-       y = "-log10 Adjusted p-value")
-
-graph2tif(x = NULL, file='Cor_grpCorVolcano_10', font = "Arial", cairo = TRUE,   
-          width = 10, height = 5, bg = "transparent")
-
-
-
-
-
-
-
-##### METAFlux: Metabolites ################### temp1
-# Here, we do not compute cell-wise flux. Instead, we model fluxes at cluster/cell-type level.
-# We will demonstrate use cases using Seurat object.
-
-## 1.Install packages and Load the library
-
-devtools::install_github('KChen-lab/METAFlux')
-library(METAFlux)
-
-## 2.Load data
-## 2.1 Load gene expression data.
-# The input gene expression matrix should be normalized
-# Cluster or cell type assignments for each cell
-# Directly calculated cluster (group) fractions in single-cell data
-# data("sc_test_example")
-
-liver.mergeIntegr1 <- readRDS("liver_merge_integration1.rds")
-head(liver.mergeIntegr1[[]])
-head(liver.mergeIntegr1@assays$SCT@data)
-Idents(liver.mergeIntegr1)
-
-scMetaflux1=liver.mergeIntegr1
-head(scMetaflux1@meta.data)
-tail(scMetaflux1@meta.data)
-table(Idents(scMetaflux1))
-table(scMetaflux1$orig.ident)
-
-# Change group names
-scMetaflux1$orig.ident[scMetaflux1$orig.ident == "PairFed1"] <- "Group1"
-scMetaflux1$orig.ident[scMetaflux1$orig.ident == "PairFed2"] <- "Group1"
-
-scMetaflux1$orig.ident[scMetaflux1$orig.ident == "GDF15_1"] <- "Group2"
-scMetaflux1$orig.ident[scMetaflux1$orig.ident == "GDF15_2"] <- "Group2"
-
-scMetaflux1$celltype.stim <- paste(Idents(scMetaflux1), scMetaflux1$orig.ident, sep = "_")
-scMetaflux1$celltype <- Idents(scMetaflux1)
-Idents(scMetaflux1) <- "celltype.stim"
-table(scMetaflux1$celltype.stim)
-
-head(scMetaflux1@meta.data)
-saveRDS(scMetaflux1, file = "CompassAnal.rds")
-compassFBA <- readRDS("CompassAnal.rds")
-
-# check cell types, here we want to model cell-type level flux
-# table(sc_test_example$Cell_type)
-table(scMetaflux1$celltype)
-
-
-## 2.2 Load the METAFlux underlying GEM information.
-#data("human_gem")
-library(xml2)
-mouse_gem <- read_xml("Mouse-GEM.xml")
-head(mouse_gem)
-values <- xml_text(mouse_gem)
-head(values)
-
-## 2.3 Load the METAFlux medium.
-data("human_blood")
-data("cell_medium")
-data("nutrient_lookup_files")
-
-
-## 3. Create an average expression profile for stratified
-##    bootstrapped samples for this patient
-#Calculate the mean expression for bootstrap samples
-#For the sake of demonstration, we only set the number of bootstraps to 3. 
-#In real analysis, the number of bootstraps should be much higher(e.g. 100, 200....)
-options(Seurat.object.assay.version = 'v3')
-mean_exp=calculate_avg_exp(myseurat = sc_test_example,myident = 'Cell_type',n_bootstrap=3,seed=1)
-
-
-generate_boots <- function(celltype, n) {
-  dt <- data.frame(cluster = celltype, id = 1:length(celltype))
-  index <- do.call(cbind, sapply(1:n, function(x) {
-    splits <- dt %>%
-      group_by(cluster) %>%
-      sample_n(dplyr::n(), replace = TRUE) %>%
-      ungroup() %>%
-      dplyr::select("id")
-  
-  }))
-  return(index)
-}
-
-get_ave_exp <- function(i, myseurat, samples,myident) {
-  meta.data=myseurat@meta.data[samples[,i],]
-  sample <-GetAssayData(myseurat, assay = "RNA")[,samples[,i]]
-  name <- colnames(sample)
-  for (j in 1:length(name)) {
-    name[j] <- paste0(name[j], "_", j)
-  }
-  colnames(sample) <- name
-  rownames(meta.data) <- name
-  SeuratObject<-suppressWarnings(
-    CreateSeuratObject(count=sample, meta.data = meta.data))
-  SeuratObject<-NormalizeData(SeuratObject,verbose = TRUE)
-  ave<-GetAssayData(AverageExpression(SeuratObject,group.by = myident,return.seurat = T), assay = "RNA") %>% as.data.frame()
-  return(ave)
-}
-
-edit_calculate_avg_exp <- function(myseurat,myident,n_bootstrap,seed) {
-  set.seed(seed)
-  samples=generate_boots(myseurat@meta.data[,myident],n_bootstrap)
-  exp <- lapply(1:n_bootstrap,get_ave_exp,myseurat,samples,myident)
-  exp <- do.call(cbind, exp)
-  return(exp)
-}
-
-mean_exp = edit_calculate_avg_exp(myseurat = sc_test_example, myident = 'celltype', n_bootstrap = 50, seed = 1) 
-
-
-
-## 4.Calculate MRAS (Metabolic Reaction Activity Score)
-# We can calculate single sample normalized MRAS from data using Gene-protein-reaction (GPR)
-#calculate metabolic reaction scores
-scores<-calculate_reaction_score(data=mean_exp)
-
-#Take a look at MRAS results
-head(scores,4)
-
-## 5.Calculate flux
-#calculate the fractions of celltype/clusters
-round(table(sc_test_example$Cell_type)/nrow(sc_test_example@meta.data),1)
-
-#calculate flux,here we used human blood as our medium, but please change to cell line medium if you sample is from cell line.
-#num_cell:number of cell types/clusters=4
-flux=compute_sc_flux(num_cell = 4,fraction =c(0.1,0.3,0.3,0.3),fluxscore=scores,medium = human_blood)
-
-
-
-
-
-# Bulk RNA MetaFlux
-#load our toy example data
-data("bulk_test_example")
-
-head(bulk_test_example)
-data("human_gem")
-
-data("cell_medium")# for cell line model
-data("human_blood")# for human derived samples
-
-data("nutrient_lookup_files")
-
-scores<-calculate_reaction_score(bulk_test_example)
-
-flux<-compute_flux(mras=scores,medium = human_blood)#if data are human derived samples
-
-#optional.We can apply cubic root normalization to flux scores.
-
-cbrt <- function(x) {
-  sign(x) * abs(x)^(1/3)
-}
-
-flux=cbrt(flux)
-
-data("nutrient_lookup_files")
-glucose<-data.frame(glucose=flux[grep("HMR_9034",human_gem$ID),])
-glucose
-
-library(ggplot2)
-ggplot(glucose,aes(y=-glucose,x="sample"))+geom_boxplot()+ggtitle("Glucose uptake level")+xlab("")+ylab("Glucose uptake scores")
-
-
-
-
-# ---------- metabolic cell-cell communication -------- temp
-# load data
-DEgs1 <- readRDS("CompassAnal.rds")
-
-# ssGSEA analysis
-# extract data frame
-seurat_obj = DEgs1
-expr <- as.matrix(GetAssayData(seurat_obj, slot = "data", assay = "SCT"))
-
-# define metabolic genesets
-load("KEGGMetabolismirGSEA.RData")
-head(geneset4)
-load("KEGGMetabolismirGSEADetail.RData")
-head(geneset5)
-gene_sets <- geneset4
-
-
-# ssGSEA
-library(GSVA)
-library(limma)
-library(dittoSeq)
-library(CellChat)
-scores <- gsva(ssgseaParam(expr, gene_sets), verbose=T)  # results are: gene_set × cell/spot
-head(scores)
-
-
-# reverse and add them to meta.data
-scr_ssgsea <- t(scores)
-seurat_object <- AddMetaData(seurat_obj, metadata = scr_ssgsea)
-
-head(seurat_object@meta.data)
-
-# seurat_object
-
-cellchat <- createCellChat(object = seurat_object@assays$SCT@data,
-                           meta = seurat_object@meta.data,
-                           group.by = "celltype")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#------ python compass analysis- FBA - input data preparation -----------------------------------------------
-# temp
-# python compass analysis- FBA
+## 12. Metabolic activity analysis
+##     c. Flux balance analysis (FBA)
+# FBA - input data preparation
 library(Seurat)
 library(Matrix)
 update.packages("Matrix")
-
 compassFBA <- readRDS("CompassAnal.rds")
 DimPlot(compassFBA, reduction = "umap.harmony", group.by = "celltype.stim", label = TRUE)
 
@@ -5829,14 +2782,3 @@ metadata_df <- compassFBA@meta.data
 head(metadata_df)
 
 write.csv(metadata_df, file = "cell_metadata.csv", quote = TRUE)
-
-
-
-
-#----------- take information for mouse GEM
-
-
-
-
-
-
