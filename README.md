@@ -1,8 +1,8 @@
-### STProtocolMouseLiverMetabolism
+# STProtocolMouseLiverMetabolism
 An Integrated Pipeline for Cell-Type Annotation, Metabolic Pathway Profiling, and Spatial Communication Analysis in the Liver using Spatial Transcriptomics
 
-##### Overview for downstream analysis #####
-## This tutorial will cover the following tasks:
+# Overview for downstream analysis
+# This tutorial will cover the following tasks:
 
 ## 1. Quality Control (QC) and normalization
 ## 2. Dimension reduction
@@ -10,18 +10,18 @@ An Integrated Pipeline for Cell-Type Annotation, Metabolic Pathway Profiling, an
 ## 4. Non-linear dimensional reduction (UMAP/t-SNE)
 ## 5. Identification of cluster biomarkers
 ## 6. Cell type annotation 
-#      a. Automatic annotation using GPT; 
-#      b. Annotation via deconvolution using a scRNA-seq reference 
-#      c. Manual annotation
+###      a. Automatic annotation using GPT; 
+###      b. Annotation via deconvolution using a scRNA-seq reference 
+###      c. Manual annotation
 ## 7. DEG analysis, pathway enrichment analysis and Spatially Variable Genes (SVGs) analysis
 ## 8. Integrative analysis across multiple samples or conditions
 ## 9. Pseudobulk analysis
 ## 10. Quantification of cell type composition 
 ## 11. Cellular communication
 ## 12. Metabolic activity analysis
-#      a. Metabolic pathway activity
-#      b. Metabolic interactions
-#      c. Flux balance analysis (FBA)
+###      a. Metabolic pathway activity
+###      b. Metabolic interactions
+###      c. Flux balance analysis (FBA)
 
 
 
