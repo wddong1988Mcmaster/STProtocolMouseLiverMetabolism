@@ -2782,3 +2782,4 @@ metadata_df <- compassFBA@meta.data
 head(metadata_df)
 
 write.csv(metadata_df, file = "cell_metadata.csv", quote = TRUE)
+
